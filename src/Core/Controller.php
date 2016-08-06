@@ -3,6 +3,10 @@ namespace Toda\Core;
 
 use Phalcon\Mvc\Controller as ControllerRoot;
 use Phalcon\Mvc\View;
+use Toda\Client\HttpClient;
+use Toda\Validation\ErrorMessage;
+use Toda\Validation\OldValue;
+use Toda\Validation\Validate;
 
 class Controller extends ControllerRoot
 {
@@ -15,11 +19,11 @@ class Controller extends ControllerRoot
         $this->checkCSRF();
 
         if ($this->session->has('errors')) {
-            $this->errors = new \validation\ErrorMessage($this->session->get('errors'));
+            $this->errors = new ErrorMessage($this->session->get('errors'));
             $this->session->remove('errors');
 
             if ($this->session->has('old')) {
-                $this->old = new \validation\OldValue($this->session->get('old'));
+                $this->old = new OldValue($this->session->get('old'));
                 $this->session->remove('old');
             }
         }
@@ -27,6 +31,7 @@ class Controller extends ControllerRoot
         if ($this->session->has('auth')) {
             $this->auth = $this->session->get('auth');
         }
+        
 
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
         $this->response->setHeader("Access-Control-Allow-Origin", "*");
@@ -48,6 +53,7 @@ class Controller extends ControllerRoot
         if (($run && key($params) === 'only') || (!$run && key($params) !== 'only')) {
             $name = $name . 'Middleware';
             $controller = $this->dispatcher->getControllerName();
+            
             $this->$name($controller, $action);
         }
     }
@@ -59,7 +65,7 @@ class Controller extends ControllerRoot
          * 2: is request post method
          * 3: is csrf error
          */
-        $flag = 1; 
+        $flag = 1;
         if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
             $flag = ($this->session->get('token') != $this->cookies->get('token')) ? 3 : 2;
         }
@@ -68,7 +74,7 @@ class Controller extends ControllerRoot
             $this->session->set('token', $token);
             $this->cookies->set('token', $token);
         }
-        
+
         if($flag == 3){
             return $this->dispatcher->forward([
                 'controller' => 'errors',
@@ -124,7 +130,7 @@ class Controller extends ControllerRoot
                 $param = empty($params[1]) ? '' : $params[1];
 
                 $value = $this->request->get($key);
-                $message = \validation\Validate::$method($key, $value, $param);
+                $message = Validate::$method($key, $value, $param);
                 if (!empty($message)) {
                     $valid = false;
                     $error_messages[$key] = empty($messages[$key]) ? $message : $messages[$key];
@@ -143,7 +149,7 @@ class Controller extends ControllerRoot
         if ($this->request->has('g-recaptcha-response')) {
             $captcha = $this->request->get('g-recaptcha-response');
         }
-        $client = new \client\HttpClient();
+        $client = new HttpClient();
 
         $response = json_decode($client->init()
             ->get("https://www.google.com/recaptcha/api/siteverify?secret=" . page('recaptcha_secret') . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
