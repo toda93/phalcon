@@ -50,8 +50,11 @@ class Form {
         echo '</form>';
     }
 
-    public function field($name){
+    public function field($name, $model = null){
         $this->name = $name;
+        if(!empty($model)){
+            $this->value = $model->$name;
+        }
         return $this;
     }
 
@@ -90,6 +93,29 @@ class Form {
         return $this;
     }
 
+    public function file(array $options = []){
+        $this->opts = $options;
+        $this->html = "<input type='file' name='{$this->name}' {options} value='{value}'>";
+        return $this;
+    }
+
+    public function select(array $values , array $options = []){
+        $this->opts = $options;
+        $this->html = "<select name='{$this->name}' {options}>";
+
+        $value = $this->buildValue();
+
+        foreach($values as $key=>$value){
+            if($value == $key){
+                $this->html .= "<option value='$key' selected>$value</option>";
+            } else {
+                $this->html .= "<option value='$key'>$value</option>";
+            }
+        }
+        $this->html .= "</select>";
+        return $this;
+    }
+
     public function checkbox(array $options = []){
         $this->opts = $options;
         $this->html = "<input type='checkbox' name='{$this->name}' {options} value='{value}'>";
@@ -104,7 +130,7 @@ class Form {
 
     public function submit($text = '', array $options = []){
         $this->opts = $options;
-        $this->html = "<button type='submit' {options}>$text</button>";
+        $this->html = "<button type='submit' {options} name='submit'>$text</button>";
         return $this;
     }
 
