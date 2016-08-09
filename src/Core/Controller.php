@@ -44,17 +44,16 @@ class Controller extends ControllerRoot
         ]);
     }
 
-    protected function middleware($name, $params = [])
+    protected function middleware($middleware, array $options = [])
     {
-        $action = $this->dispatcher->getActionName();
+        $params = explode(':', $middleware);
+        
+        $run = (preg_match('/' . $this->dispatcher->getActionName() . '/', reset($options)));
 
-        $run = (preg_match('/' . $action . '/', reset($params)));
-
-        if (($run && key($params) === 'only') || (!$run && key($params) !== 'only')) {
-            $name = $name . 'Middleware';
-            $controller = $this->dispatcher->getControllerName();
+        if (($run && key($options) === 'only') || (!$run && key($options) !== 'only')) {
+            $name = $params[0] . 'Middleware';
             
-            $this->$name($controller, $action);
+            $this->$name(empty($params[1]) ? null : $params[1]);
         }
     }
 
@@ -65,17 +64,19 @@ class Controller extends ControllerRoot
          * 2: is request post method
          * 3: is csrf error
          */
-        $flag = 1;
+        $flag = false;
         if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
-            $flag = ($this->session->get('token') != $this->cookies->get('token')) ? 3 : 2;
+
+            $flag = ($this->session->get('token') != $this->cookies->get('token')) ? true : false;
+            $this->cookies->get('token')->delete();
         }
-        if (!$this->session->has('token') || !$this->cookies->has('token') || $flag > 1) {
+        if (!$this->session->has('token') || !$this->cookies->has('token')) {
             $token = uniqid();
-            $this->session->set('token', $token);
             $this->cookies->set('token', $token);
+            $this->session->set('token', $token);
         }
 
-        if($flag == 3){
+        if($flag){
             return $this->dispatcher->forward([
                 'controller' => 'errors',
                 'action' => 'show403',
