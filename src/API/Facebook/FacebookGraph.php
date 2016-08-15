@@ -22,6 +22,11 @@ class FacebookGraph
         $data = $client->init()->get($this->endpoint . $id . '/comments?fields=from,message&limit=1000' . '&access_token=' . $this->access_token);
 
         $data = json_decode($data, true);
+
+        if(empty($data['data'])){
+            return [];
+        }
+
         $result = $data['data'];
 
         while (!empty($data['paging']['next'])) {
@@ -39,6 +44,5 @@ class FacebookGraph
 
         $data = $client->init()->get($this->endpoint . $id . '/likes?fields=from,message&limit=1000' . '&access_token=' . $this->access_token);
 
-        var_dump($data); exit;
     }
 }
