@@ -10,16 +10,19 @@ class DispatchException extends Plugin
     public function beforeException(Event $event, Dispatcher $dispatcher, $exception)
     {
 
+      
         switch ($exception->getCode()) {
             case 404:
             case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
             case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+
                 $dispatcher->forward(
                     array(
                         'controller' => 'errors',
                         'action' => 'show404'
                     )
                 );
+
                 return false;
             case 403:
                 $dispatcher->forward(

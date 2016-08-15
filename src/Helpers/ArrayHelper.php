@@ -29,7 +29,7 @@ class ArrayHelper
     {
         foreach ($array as $k => $item) {
 
-            if($item->$key == $value){
+            if ($item->$key == $value) {
                 return $k;
             }
         }
@@ -39,10 +39,22 @@ class ArrayHelper
     public static function filterKeyArray($array, $key, $value)
     {
         foreach ($array as $k => $item) {
-            if($item[$key] == $value){
+            if ($item[$key] == $value) {
                 return $k;
             }
         }
         return -1;
+    }
+
+    public static function searchInArray($string, $keys)
+    {
+        if(!empty($string) && !empty($keys)){
+            foreach ($keys as $key) {
+                if (preg_match('/' . $key . '/i', $string, $matches)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

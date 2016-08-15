@@ -127,13 +127,7 @@ class Form {
         $this->html = "<textarea name='{$this->name}' {options}>{value}</textarea>";
         return $this;
     }
-
-    public function submit($text = '', array $options = []){
-        $this->opts = $options;
-        $this->html = "<button type='submit' {options} name='submit'>$text</button>";
-        return $this;
-    }
-
+    
     public function captcha(array $options = []){
         $this->name = 'captcha';
         $this->opts = $options;

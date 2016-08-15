@@ -59,15 +59,11 @@ class Controller extends ControllerRoot
 
     protected function checkCSRF()
     {
-        /*
-         * 1: is default
-         * 2: is request post method
-         * 3: is csrf error
-         */
         $flag = false;
         if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
 
             $flag = ($this->session->get('token') != $this->cookies->get('token')) ? true : false;
+            $this->session->remove('token');
             $this->cookies->get('token')->delete();
         }
         if (!$this->session->has('token') || !$this->cookies->has('token')) {
