@@ -301,7 +301,7 @@ class QueryBuilder extends \Phalcon\Mvc\Model\Query\Builder
         return $obj->getWriteConnection()->query($sql);
     }
 
-    public function pagination($page = 1, $limit = 20)
+    public function pagination($page = 1, $limit = 50)
     {
         $result = new \Phalcon\Paginator\Adapter\QueryBuilder(
             array(

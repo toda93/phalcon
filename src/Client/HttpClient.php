@@ -28,7 +28,7 @@ class HttpClient
             ->setOpt(CURLOPT_RETURNTRANSFER, true)
             ->setOpt(CURLOPT_COOKIEFILE, __DIR__ . '/cookies.txt')
             ->setOpt(CURLOPT_COOKIEJAR, __DIR__ . '/cookies.txt')
-            ->setOpt(CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30');
+            ->setOpt(CURLOPT_USERAGENT, ' Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
 
         return $this;
     }
@@ -76,6 +76,19 @@ class HttpClient
         $this->setOpt(CURLOPT_URL, $url)
             ->setOpt(CURLOPT_POST, 1)
             ->setOpt(CURLOPT_POSTFIELDS, $data)
+            ->setOpt(CURLOPT_URL, $url);
+        $result = $this->execute();
+
+        return $result;
+    }
+    public function put($url, $data, $build = true)
+    {
+        if ($build == true) {
+            $data = http_build_query($data);
+        }
+        $this->setOpt(CURLOPT_URL, $url)
+            ->setOpt(CURLOPT_POST, 1)
+            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
             ->setOpt(CURLOPT_URL, $url);
         $result = $this->execute();
 

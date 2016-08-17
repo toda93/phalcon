@@ -22,7 +22,7 @@ class FacebookGraph
         $data = $client->init()->get($this->endpoint . $id . '/comments?fields=from,message&limit=1000' . '&access_token=' . $this->access_token);
 
         $data = json_decode($data, true);
-
+        
         if(empty($data['data'])){
             return [];
         }
