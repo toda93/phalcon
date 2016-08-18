@@ -86,6 +86,11 @@ class Form {
         $this->html = "<input type='text' name='{$this->name}' {options} value='{value}'>";
         return $this;
     }
+    public function url(array $options = []){
+        $this->opts = $options;
+        $this->html = "<input type='url' name='{$this->name}' {options} value='{value}'>";
+        return $this;
+    }
 
     public function number(array $options = []){
         $this->opts = $options;

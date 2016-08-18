@@ -19,7 +19,7 @@ class FacebookGraph
     {
         $client = new HttpClient();
 
-        $data = $client->init()->get($this->endpoint . $id . '/comments?fields=from,message&limit=1000' . '&access_token=' . $this->access_token);
+        $data = $client->init()->get($this->endpoint . $id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->access_token);
 
         $data = json_decode($data, true);
         
@@ -35,14 +35,20 @@ class FacebookGraph
 
             $result = array_merge($data['data'], $result);
         }
-
         return $result;
     }
 
-    public function getUserPageLikes($id){
-        $client = new HttpClient();
+    public static function getIdByUrl($url){
+        $response = file_get_contents("http://graph.facebook.com/fql?q=select url, id, type, site from object_url where url = \"$url\"");
+        $data = json_decode($response, true);
 
-        $data = $client->init()->get($this->endpoint . $id . '/likes?fields=from,message&limit=1000' . '&access_token=' . $this->access_token);
+        return empty($data['data']) ? false : $data['data'][0]['id'];
+    }
+
+    public function getUserPageLikes($id){
+//        $client = new HttpClient();
+//
+//        $data = $client->init()->get($this->endpoint . $id . '/likes?fields=from,message&limit=5000' . '&access_token=' . $this->access_token);
 
     }
 }

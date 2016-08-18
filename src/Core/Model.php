@@ -5,7 +5,7 @@ namespace Toda\Core;
 
 class Model extends \Phalcon\Mvc\Model
 {
-    protected $track = true;
+    protected $track = false;
 
     public function initialize()
     {
@@ -23,6 +23,11 @@ class Model extends \Phalcon\Mvc\Model
             'models' => static::class
         ]);
         return call_user_func_array([$builder, $method], $parameters);
+    }
+
+    public function disableTrack(){
+        $this->track = false;
+        return $this;
     }
 
     public function beforeCreate()
