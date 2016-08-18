@@ -13,7 +13,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.9",
-    "ext-phalcon": "^3.0",
+    "ext-phalcon": "^2.0.10",
     "swiftmailer/swiftmailer": "~5.2",
     "phpoffice/phpexcel": "~1.8.1"
   },
