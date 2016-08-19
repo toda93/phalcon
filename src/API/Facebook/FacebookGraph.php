@@ -49,6 +49,8 @@ class FacebookGraph
 
         if (preg_match('/id=(\d+)/', $name, $matches)) {
             $name = $matches[1];
+        } else if (preg_match('/-(\d+)$/', $name, $matches)) {
+            $name = $matches[1];
         }
         $data = $client->init()->get($this->endpoint . $name . '?fields=fan_count&access_token=' . $this->access_token);
 
