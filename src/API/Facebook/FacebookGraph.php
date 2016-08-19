@@ -22,8 +22,8 @@ class FacebookGraph
         $data = $client->init()->get($this->endpoint . $id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->access_token);
 
         $data = json_decode($data, true);
-        
-        if(empty($data['data'])){
+
+        if (empty($data['data'])) {
             return [];
         }
 
@@ -38,14 +38,33 @@ class FacebookGraph
         return $result;
     }
 
-    public static function getIdByUrl($url){
-        $response = file_get_contents("http://graph.facebook.com/fql?q=select url, id, type, site from object_url where url = \"$url\"");
-        $data = json_decode($response, true);
+    public function getIdByUrl($url)
+    {
 
-        return empty($data['data']) ? false : $data['data'][0]['id'];
+        $client = new HttpClient();
+
+        $url = rtrim($url, '/');
+
+        $name = substr(strrchr($url, '/'), 1);
+
+        var_dump($this->endpoint . $name . '&access_token=' . $this->access_token);
+
+        if (preg_match('/id=(\d+)/', $name, $matches)) {
+            return $matches[1];
+        } else {
+            $data = $client->init()->get($this->endpoint . $name . '?access_token=' . $this->access_token);
+
+            $data = json_decode($data, true);
+
+            if (empty($data['id'])) {
+                return '';
+            }
+            return $data['id'];
+        }
     }
 
-    public function getUserPageLikes($id){
+    public function getUserPageLikes($id)
+    {
 //        $client = new HttpClient();
 //
 //        $data = $client->init()->get($this->endpoint . $id . '/likes?fields=from,message&limit=5000' . '&access_token=' . $this->access_token);
