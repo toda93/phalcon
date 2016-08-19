@@ -38,7 +38,7 @@ class FacebookGraph
         return $result;
     }
 
-    public function getIdByUrl($url)
+    public function getPageInfoByUrl($url)
     {
 
         $client = new HttpClient();
@@ -47,20 +47,12 @@ class FacebookGraph
 
         $name = substr(strrchr($url, '/'), 1);
 
-        var_dump($this->endpoint . $name . '&access_token=' . $this->access_token);
-
         if (preg_match('/id=(\d+)/', $name, $matches)) {
-            return $matches[1];
-        } else {
-            $data = $client->init()->get($this->endpoint . $name . '?access_token=' . $this->access_token);
-
-            $data = json_decode($data, true);
-
-            if (empty($data['id'])) {
-                return '';
-            }
-            return $data['id'];
+            $name = $matches[1];
         }
+        $data = $client->init()->get($this->endpoint . $name . '?fields=fan_count&access_token=' . $this->access_token);
+
+        return json_decode($data, true);
     }
 
     public function getUserPageLikes($id)
