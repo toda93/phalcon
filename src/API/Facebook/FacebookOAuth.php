@@ -6,25 +6,16 @@ use Toda\Client\HttpClient;
 
 abstract class FacebookOAuth
 {
-    protected $oauth_endpoint = 'https://www.facebook.com/v2.6/dialog/oauth';
-    protected $oauth_token_endpoint = 'https://graph.facebook.com/v2.6/oauth/access_token';
-
     protected $scope = '';
 
-    private $token = [];
+    protected $token = [];
 
     public function __construct($token = [])
-    {
-        $this->setToken($token);
-    }
-
-    protected function setToken($token)
     {
         $this->token = $token;
     }
 
-    protected function getToken()
-    {
+    public function getToken(){
         return $this->token;
     }
 
@@ -38,14 +29,31 @@ abstract class FacebookOAuth
             'redirect_uri' => page('facebook_oauth_callback'),
         );
 
-        $url = $this->oauth_endpoint . "?" . http_build_query($params);
+        $url = 'https://www.facebook.com/v2.6/dialog/oauth?' . http_build_query($params);
         return $url;
+    }
+
+    public function refreshToken(){
+
+        $params = array(
+            'grant_type' => 'fb_exchange_token',
+            'client_id' => page('facebook_oauth_client_id'),
+            'redirect_uri' => page('facebook_oauth_callback'),
+            'client_secret' => page('facebook_oauth_client_secret'),
+            'fb_exchange_token' => $this->token['access_token']
+        );
+
+        $client = new HttpClient();
+
+        $access_token = $this->token['access_token'];
+        parse_str($client->init()->get('https://graph.facebook.com/oauth/access_token?' .  http_build_query($params)));
+        $this->token['access_token'] = $access_token;
     }
 
     public function getTokenByCode($code)
     {
         $client = new HttpClient();
-        $response = $client->init()->post($this->oauth_token_endpoint, [
+        $response = $client->init()->post('https://graph.facebook.com/v2.6/oauth/access_token', [
             'code' => $code,
             'client_id' => page('facebook_oauth_client_id'),
             'client_secret' => page('facebook_oauth_client_secret'),

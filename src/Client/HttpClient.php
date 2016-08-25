@@ -13,21 +13,12 @@ class HttpClient
     private $ch = null;
     private $header = [];
 
-    public function __construct($clear_cookies = false)
-    {
-        if ($clear_cookies) {
-            unlink(__DIR__ . '/cookies.txt');
-        }
-    }
-
     public function init()
     {
         $this->ch = curl_init();
         $this->setOpt(CURLOPT_SSL_VERIFYHOST, false)
             ->setOpt(CURLOPT_SSL_VERIFYPEER, false)
             ->setOpt(CURLOPT_RETURNTRANSFER, true)
-            ->setOpt(CURLOPT_COOKIEFILE, __DIR__ . '/cookies.txt')
-            ->setOpt(CURLOPT_COOKIEJAR, __DIR__ . '/cookies.txt')
             ->setOpt(CURLOPT_USERAGENT, ' Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
 
         return $this;
@@ -63,9 +54,23 @@ class HttpClient
         return $this;
     }
 
+    public function setCookies($path = false)
+    {
+        if (empty($path)) {
+            $path = __DIR__ . '/cookies.txt';
+        }
+        return $this->setOpt(CURLOPT_COOKIEFILE, $path)
+                    ->setOpt(CURLOPT_COOKIEJAR, $path);
+    }
+
     public function getHeaderResponse()
     {
-        return $this->setOpt(CURLOPT_HEADER, 1);
+        return $this->setOpt(CURLOPT_HEADER, true);
+    }
+
+    public function noBody()
+    {
+        return $this->setOpt(CURLOPT_NOBODY, true);
     }
 
     public function post($url, $data, $build = true)
@@ -81,13 +86,14 @@ class HttpClient
 
         return $result;
     }
+
     public function put($url, $data, $build = true)
     {
         if ($build == true) {
             $data = http_build_query($data);
         }
         $this->setOpt(CURLOPT_URL, $url)
-            ->setOpt(CURLOPT_POST, 1)
+            ->setOpt(CURLOPT_POST, true)
             ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
             ->setOpt(CURLOPT_URL, $url);
         $result = $this->execute();
