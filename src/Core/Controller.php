@@ -10,7 +10,6 @@ use Toda\Validation\Validate;
 
 class Controller extends ControllerRoot
 {
-    protected $errors = null;
     protected $old = null;
     protected $auth = null;
 
@@ -18,20 +17,17 @@ class Controller extends ControllerRoot
     {
         $this->checkCSRF();
 
-        if ($this->session->has('errors')) {
-            $this->errors = new ErrorMessage($this->session->get('errors'));
-            $this->session->remove('errors');
 
-            if ($this->session->has('old')) {
-                $this->old = new OldValue($this->session->get('old'));
-                $this->session->remove('old');
-            }
+        if ($this->session->has('old')) {
+            $this->old = new OldValue($this->session->get('old'));
+            $this->session->remove('old');
         }
+
 
         if ($this->session->has('auth')) {
             $this->auth = $this->session->get('auth');
         }
-        
+
 
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
         $this->response->setHeader("Access-Control-Allow-Origin", "*");
@@ -39,7 +35,6 @@ class Controller extends ControllerRoot
 
         $this->view->setVars([
             'auth' => $this->auth,
-            'errors' => $this->errors,
             'old' => $this->old
         ]);
     }
@@ -47,12 +42,12 @@ class Controller extends ControllerRoot
     protected function middleware($middleware, array $options = [])
     {
         $params = explode(':', $middleware);
-        
+
         $run = (preg_match('/' . $this->dispatcher->getActionName() . '/', reset($options)));
 
         if (($run && key($options) === 'only') || (!$run && key($options) !== 'only')) {
             $name = $params[0] . 'Middleware';
-            
+
             $this->$name(empty($params[1]) ? null : $params[1]);
         }
     }
@@ -72,7 +67,7 @@ class Controller extends ControllerRoot
             $this->session->set('token', $token);
         }
 
-        if($flag){
+        if ($flag) {
             return $this->dispatcher->forward([
                 'controller' => 'errors',
                 'action' => 'show403',
@@ -136,7 +131,8 @@ class Controller extends ControllerRoot
             }
         }
         if (!$valid) {
-            return $this->errorMessages($error_messages)->back();
+            $this->flash->error(implode('<br>', $error_messages));
+            return $this->back();
         }
     }
 
@@ -153,7 +149,8 @@ class Controller extends ControllerRoot
         );
 
         if (!$response->success) {
-            return $this->errorMessages(['captcha' => 'captcha incorrect.'])->back();
+            $this->flash->error('Captcha incorrect.');
+            return $this->back();
         }
     }
 
