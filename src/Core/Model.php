@@ -34,7 +34,7 @@ class Model extends \Phalcon\Mvc\Model
     {
         if ($this->track) {
             $this->created_at = $this->updated_at = time();
-            $this->created_id = $this->updated_id = $this->getDI()->getSession()->get('auth')['id'];
+            $this->created_id = $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
         }
     }
 
@@ -42,7 +42,7 @@ class Model extends \Phalcon\Mvc\Model
     {
         if ($this->track) {
             $this->updated_at = time();
-            $this->updated_id = $this->getDI()->getSession()->get('auth')['id'];
+            $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
         }
     }
 }
