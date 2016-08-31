@@ -25,27 +25,6 @@ class ArrayHelper
         return $result;
     }
 
-    public static function filterKeyArrayObj($array, $key, $value)
-    {
-        foreach ($array as $k => $item) {
-
-            if ($item->$key == $value) {
-                return $k;
-            }
-        }
-        return -1;
-    }
-
-    public static function filterKeyArray($array, $key, $value)
-    {
-        foreach ($array as $k => $item) {
-            if ($item[$key] == $value) {
-                return $k;
-            }
-        }
-        return -1;
-    }
-
     public static function searchInArray($string, $keys)
     {
         if(!empty($string) && !empty($keys)){
