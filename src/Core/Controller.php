@@ -23,11 +23,18 @@ class Controller extends ControllerRoot
             $this->session->remove('old');
         }
 
+
+        if ($this->session->has('auth')) {
+            $this->auth = $this->session->get('auth');
+        }
+
+
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
         $this->response->setHeader("Access-Control-Allow-Origin", "*");
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
 
         $this->view->setVars([
+            'auth' => $this->auth,
             'old' => $this->old
         ]);
     }
@@ -93,6 +100,7 @@ class Controller extends ControllerRoot
         return $this->response->setJsonContent($content)->send();
     }
 
+
     protected function validate(array $conditions, array $messages = [])
     {
         $valid = true;
@@ -115,7 +123,7 @@ class Controller extends ControllerRoot
             }
         }
         if (!$valid) {
-            if ($this->request->isAjax()) {
+            if($this->request->isAjax()){
                 return $this->json($error_messages);
             } else {
                 $this->flash->error(implode('<br>', $error_messages));
