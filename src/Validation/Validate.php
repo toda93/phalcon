@@ -40,6 +40,10 @@ class Validate
         return empty($value) || !is_nan($value) ? '' : sprintf(self::$message['number'], $name);;
     }
 
+    public static function numeric($name, $value, $param){
+        return empty($value) || is_numeric($value) ? '' : sprintf(self::$message['number'], $name);;
+    }
+
     public static function regex($name, $value, $param){
         return empty($value) || preg_match($param, $value) ? '' : sprintf(self::$message['regex'], $name);
     }
