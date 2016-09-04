@@ -37,8 +37,9 @@ class Validate
     }
 
     public static function number($name, $value, $param){
-        return empty($value) || !is_nan($value) ? '' : sprintf(self::$message['number'], $name);;
+        return empty($value) || preg_match('/^[-]?[0-9]*\.?[0-9]+$/',$value) ? '' : sprintf(self::$message['number'], $name);
     }
+
 
     public static function regex($name, $value, $param){
         return empty($value) || preg_match($param, $value) ? '' : sprintf(self::$message['regex'], $name);

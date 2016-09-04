@@ -28,9 +28,8 @@ class Controller extends ControllerRoot
             $this->auth = $this->session->get('auth');
         }
 
-
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
-        $this->response->setHeader("Access-Control-Allow-Origin", "*");
+        $this->response->setHeader("Access-Control-Allow-Origin", $_SERVER['HTTP_ORIGIN']);
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
 
         $this->view->setVars([
@@ -100,11 +99,17 @@ class Controller extends ControllerRoot
         return $this->response->setJsonContent($content)->send();
     }
 
-
-    protected function validate(array $conditions, array $messages = [])
+    protected function validate(array $conditions, $overwrite = [])
     {
-        $valid = true;
+
         $error_messages = [];
+
+        $arr_check = array_map('trim', $this->request->get());
+
+        $arr_check = array_merge($arr_check, $overwrite);
+
+        $valid = true;
+
         foreach ($conditions as $key => $condition) {
 
             $arr_condition = explode('|', $condition);
@@ -113,25 +118,27 @@ class Controller extends ControllerRoot
                 $method = $params[0];
                 $param = empty($params[1]) ? '' : $params[1];
 
-                $value = $this->request->get($key);
-                $message = Validate::$method($key, $value, $param);
+                $message = Validate::$method($key, $arr_check[$key], $param);
+
                 if (!empty($message)) {
+
                     $valid = false;
-                    $error_messages[$key] = empty($messages[$key]) ? $message : $messages[$key];
+                    $error_messages[$key] = $message;
                     break;
                 }
             }
         }
         if (!$valid) {
+            $this->session->set('old', $arr_check);
+
             if($this->request->isAjax()){
                 return $this->json($error_messages);
             } else {
                 $this->flash->error(implode('<br>', $error_messages));
                 return $this->back();
             }
-
-
         }
+        return $arr_check;
     }
 
     protected function verifyCaptcha()
