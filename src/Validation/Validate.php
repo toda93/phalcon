@@ -40,13 +40,6 @@ class Validate
         return empty($value) || preg_match('/^[-]?[0-9]*\.?[0-9]+$/',$value) ? '' : sprintf(self::$message['number'], $name);
     }
 
-<<<<<<< HEAD
-    public static function numeric($name, $value, $param){
-        return empty($value) || is_numeric($value) ? '' : sprintf(self::$message['number'], $name);;
-    }
-=======
->>>>>>> af614346526680d2730683d67747b1e035f8d7e4
-
     public static function regex($name, $value, $param){
         return empty($value) || preg_match($param, $value) ? '' : sprintf(self::$message['regex'], $name);
     }
