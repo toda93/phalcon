@@ -39,6 +39,10 @@ class MemcachedManager
     }
 
     public function set($name, $content, $time){
-        $this->cache->add($name, $content, $time);
+        if(empty($this->cache->get($name))){
+            $this->cache->add($name, $content, $time);
+        } else {
+            $this->cache->replace($name, $content, $time);
+        }
     }
 }
