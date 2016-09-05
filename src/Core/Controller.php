@@ -30,11 +30,12 @@ class Controller extends ControllerRoot
 
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
 
-        $origin = empty($this->request->getServer('HTTP_ORIGIN')) ? '' : $this->request->getServer('HTTP_ORIGIN');
-        $origin = preg_replace('/http(s?):\/\//', '', $origin);
-        if (strpos($this->request->getServer('HTTP_HOST'), $origin) >= 0) {
-            $this->response->setHeader("Access-Control-Allow-Origin", "*");
-        }
+        //        $origin = empty($this->request->getServer('HTTP_ORIGIN')) ? '' : $this->request->getServer('HTTP_ORIGIN');
+//        $origin = preg_replace('/http(s?):\/\//', '', $origin);
+//        if (!empty($origin) && strpos($this->request->getServer('HTTP_HOST'), $origin) >= 0) {
+//            $this->response->setHeader("Access-Control-Allow-Origin", "*");
+//        }
+
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
 
         $this->view->setVars([
