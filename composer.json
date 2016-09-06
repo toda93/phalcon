@@ -13,9 +13,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.9",
-    "swiftmailer/swiftmailer": "~5.2",
-    "phpoffice/phpexcel": "~1.8.1",
-    "intervention/image": "^2.3"
+    "swiftmailer/swiftmailer": "~5.2"
   },
   "require-dev": {
 
