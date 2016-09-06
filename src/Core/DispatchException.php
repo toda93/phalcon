@@ -18,7 +18,7 @@ class DispatchException extends Plugin
 
                 $dispatcher->forward(
                     array(
-                        'controller' => 'errors',
+                        'controller' => 'error',
                         'action' => 'show404'
                     )
                 );
@@ -27,7 +27,7 @@ class DispatchException extends Plugin
             case 403:
                 $dispatcher->forward(
                     array(
-                        'controller' => 'errors',
+                        'controller' => 'error',
                         'action' => 'show403',
                         'params' => ['message' => $exception->getMessage()]
                     )

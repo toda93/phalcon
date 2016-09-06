@@ -60,7 +60,7 @@ class Controller extends ControllerRoot
     protected function checkCSRF()
     {
         $flag = false;
-        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
+        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
 
             $flag = ($this->session->get('token') != $this->cookies->get('token')) ? true : false;
             $this->session->remove('token');
@@ -74,7 +74,7 @@ class Controller extends ControllerRoot
 
         if ($flag) {
             return $this->dispatcher->forward([
-                'controller' => 'errors',
+                'controller' => 'error',
                 'action' => 'show403',
                 'params' => ['message' => 'CSRF token not mismatch'],
             ]);
