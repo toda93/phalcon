@@ -114,6 +114,8 @@ class Controller extends ControllerRoot
 
         $arr_check = array_merge($arr_check, $overwrite);
 
+        $arr_check = array_map('htmlentities', $arr_check);
+
         $valid = true;
 
         foreach ($conditions as $key => $condition) {
