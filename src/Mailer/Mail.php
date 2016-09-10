@@ -32,7 +32,7 @@ class Mail
             $message->setFrom($name);
         } else {
             $message->setFrom(array(
-                $this->config->from => $name
+                $this->config['from'] => $name
             ));
         }
         $message->setTo($to)
@@ -41,12 +41,12 @@ class Mail
 
         if (!$this->_transport) {
             $this->_transport = \Swift_SmtpTransport::newInstance(
-                $this->config->server,
-                $this->config->port,
-                $this->config->security
+                $this->config['server'],
+                $this->config['port'],
+                $this->config['security']
             )
-                ->setUsername($this->config->username)
-                ->setPassword($this->config->password);
+                ->setUsername($this->config['username'])
+                ->setPassword($this->config['password']);
         }
         // Create the Mailer using your created Transport
         $mailer = \Swift_Mailer::newInstance($this->_transport);
