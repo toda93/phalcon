@@ -114,7 +114,7 @@ class Controller extends ControllerRoot
 
         $arr_check = array_merge($arr_check, $overwrite);
 
-        $arr_check = array_map('htmlentities', $arr_check);
+        $arr_check = array_map('htmlspecialchars', $arr_check);
 
         $valid = true;
 
