@@ -96,6 +96,9 @@ abstract class FacebookOAuth
                 'pass' => $password
             ]);
 
+
+        echo $response; exit;
+
         if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
             return true;
         }
