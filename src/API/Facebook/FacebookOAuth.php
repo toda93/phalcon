@@ -90,6 +90,8 @@ abstract class FacebookOAuth
         $response = $client->init()
             ->setCookies()
             ->getHeaderResponse()
+            ->addHeader('Content-Type','application/x-www-form-urlencoded')
+            ->addHeader('Referer','https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US')
             ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
                 'email' => $email,
                 'pass' => $password
@@ -111,13 +113,13 @@ abstract class FacebookOAuth
         $response = $client->init()
             ->setCookies($cookies)
             ->getHeaderResponse()
-            ->get('https://www.facebook.com/login.php');
+            ->get('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US');
 
         if (!preg_match('/HTTP\/1\.1 302 Found/', $response)) {
             $response = $client->init()
                 ->setCookies($cookies)
                 ->getHeaderResponse()
-                ->post('https://www.facebook.com/login.php', [
+                ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
                     'email' => $email,
                     'pass' => $password
                 ]);
