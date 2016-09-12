@@ -85,17 +85,16 @@ abstract class FacebookOAuth
     {
         $client = new \Toda\Client\HttpClient();
 
-        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.php');
+        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.phpr.php?locale=vi_VN');
 
         $response = $client->init()
             ->setCookies()
             ->getHeaderResponse()
             ->noBody()
-            ->post('https://www.facebook.com/login.php', [
+            ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
                 'email' => $email,
                 'pass' => $password
             ]);
-
 
         echo $response; exit;
 
