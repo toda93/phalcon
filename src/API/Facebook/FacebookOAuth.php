@@ -96,6 +96,10 @@ abstract class FacebookOAuth
                 'pass' => $password
             ]);
 
+        var_dump($email);
+
+        var_dump($password);
+
         echo $response; exit;
 
         if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
