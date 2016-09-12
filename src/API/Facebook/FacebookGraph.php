@@ -44,6 +44,17 @@ class FacebookGraph extends FacebookOAuth
         return $result;
     }
 
+    public function getInfo($id)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $id . '?access_token=' . $this->token['access_token']);
+
+        $data = json_decode($data, true);
+
+        return $data;
+    }
+
     public function getPageInfoByUrl($url)
     {
 
