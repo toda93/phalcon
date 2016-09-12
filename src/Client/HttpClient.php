@@ -19,7 +19,7 @@ class HttpClient
         $this->setOpt(CURLOPT_SSL_VERIFYHOST, false)
             ->setOpt(CURLOPT_SSL_VERIFYPEER, false)
             ->setOpt(CURLOPT_RETURNTRANSFER, true)
-            ->setOpt(CURLOPT_USERAGENT, ' Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
+            ->setOpt(CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
 
         return $this;
     }
@@ -70,11 +70,6 @@ class HttpClient
     public function getHeaderResponse()
     {
         return $this->setOpt(CURLOPT_HEADER, true);
-    }
-
-    public function noBody()
-    {
-        return $this->setOpt(CURLOPT_NOBODY, true);
     }
 
     public function post($url, $data, $build = true)
