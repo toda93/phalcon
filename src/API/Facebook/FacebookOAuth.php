@@ -10,12 +10,16 @@ abstract class FacebookOAuth
 
     protected $token = [];
 
-    public function __construct($token = [])
+    protected $config = [];
+
+    public function __construct($config, $token = [])
     {
+        $this->config = $config;
         $this->token = $token;
     }
 
-    public function getToken(){
+    public function getToken()
+    {
         return $this->token;
     }
 
@@ -25,28 +29,29 @@ abstract class FacebookOAuth
             'scope' => $this->scope,
             'response_type' => 'code',
             'auth_type' => 'rerequest',
-            'client_id' => page('facebook_oauth_client_id'),
-            'redirect_uri' => page('facebook_oauth_callback'),
+            'client_id' => $this->config['client_id'],
+            'redirect_uri' => $this->config['callback'],
         );
 
         $url = 'https://www.facebook.com/v2.6/dialog/oauth?' . http_build_query($params);
         return $url;
     }
 
-    public function refreshToken(){
+    public function refreshToken()
+    {
 
         $params = array(
             'grant_type' => 'fb_exchange_token',
-            'client_id' => page('facebook_oauth_client_id'),
-            'redirect_uri' => page('facebook_oauth_callback'),
-            'client_secret' => page('facebook_oauth_client_secret'),
+            'client_id' => $this->config['client_id'],
+            'redirect_uri' => $this->config['callback'],
+            'client_secret' => $this->config['client_secret'],
             'fb_exchange_token' => $this->token['access_token']
         );
 
         $client = new HttpClient();
 
         $access_token = $this->token['access_token'];
-        parse_str($client->init()->get('https://graph.facebook.com/oauth/access_token?' .  http_build_query($params)));
+        parse_str($client->init()->get('https://graph.facebook.com/oauth/access_token?' . http_build_query($params)));
         $this->token['access_token'] = $access_token;
     }
 
@@ -55,9 +60,9 @@ abstract class FacebookOAuth
         $client = new HttpClient();
         $response = $client->init()->post('https://graph.facebook.com/v2.6/oauth/access_token', [
             'code' => $code,
-            'client_id' => page('facebook_oauth_client_id'),
-            'client_secret' => page('facebook_oauth_client_secret'),
-            'redirect_uri' => page('facebook_oauth_callback'),
+            'client_id' => $this->config['client_id'],
+            'client_secret' => $this->config['client_secret'],
+            'redirect_uri' => $this->config['callback'],
         ]);
 
         $token = json_decode($response, true);
@@ -76,9 +81,7 @@ abstract class FacebookOAuth
         return $result;
     }
 
-
-
-    public static function checkAccount($email, $password)
+    public function checkAccount($email, $password)
     {
         $client = new \Toda\Client\HttpClient();
 
@@ -99,7 +102,8 @@ abstract class FacebookOAuth
         return false;
     }
 
-    public static function tryAccount($email, $password, $cookies){
+    public function tryAccount($email, $password, $cookies)
+    {
 
         $client = new \Toda\Client\HttpClient();
 
@@ -121,6 +125,7 @@ abstract class FacebookOAuth
                 return false;
             }
 
-        } return true;
+        }
+        return true;
     }
 }
