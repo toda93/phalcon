@@ -90,6 +90,7 @@ abstract class FacebookOAuth
         $response = $client->init()
             ->setCookies()
             ->getHeaderResponse()
+            ->addHeader('Upgrade-Insecure-Requests','1')
             ->addHeader('Content-Type','application/x-www-form-urlencoded')
             ->addHeader('Referer','https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US')
             ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
