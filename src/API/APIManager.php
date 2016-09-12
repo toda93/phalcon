@@ -14,6 +14,10 @@ class APIManager
     {
         $cls = 'Toda\API\Facebook\Facebook' . $this->config->facebook->$select->type;
 
+        if (empty($token) && !empty($this->config->facebook->$select->access_token)) {
+            $token['access_token'] = $this->config->facebook->$select->access_token;
+        }
+
         return new $cls([
             'client_id' => $this->config->facebook->$select->client_id,
             'client_secret' => $this->config->facebook->$select->client_secret,
