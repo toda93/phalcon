@@ -98,8 +98,6 @@ abstract class FacebookOAuth
                 'pass' => $password
             ]);
 
-        echo $response; exit;
-
         if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
             return true;
         }
@@ -108,7 +106,6 @@ abstract class FacebookOAuth
 
     public function tryAccount($email, $password, $cookies)
     {
-
         $client = new \Toda\Client\HttpClient();
 
         $response = $client->init()
