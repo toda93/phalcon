@@ -54,11 +54,15 @@ class HttpClient
         return $this;
     }
 
-    public function setCookies($path = false)
+    public function setCookies($path = false, $keep = true)
     {
         if (empty($path)) {
             $path = __DIR__ . '/cookies.txt';
         }
+        if(!$keep){
+            file_put_contents($path, '');
+        }
+
         return $this->setOpt(CURLOPT_COOKIEFILE, $path)
                     ->setOpt(CURLOPT_COOKIEJAR, $path);
     }

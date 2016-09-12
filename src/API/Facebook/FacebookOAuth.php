@@ -75,4 +75,52 @@ abstract class FacebookOAuth
         }
         return $result;
     }
+
+
+
+    public static function checkAccount($email, $password)
+    {
+        $client = new \Toda\Client\HttpClient();
+
+        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.php');
+
+        $response = $client->init()
+            ->setCookies()
+            ->getHeaderResponse()
+            ->noBody()
+            ->post('https://www.facebook.com/login.php', [
+                'email' => $email,
+                'pass' => $password
+            ]);
+
+        if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function tryAccount($email, $password, $cookies){
+
+        $client = new \Toda\Client\HttpClient();
+
+        $response = $client->init()
+            ->setCookies($cookies)
+            ->getHeaderResponse()->noBody()
+            ->get('https://www.facebook.com/login.php');
+
+        if (!preg_match('/HTTP\/1\.1 302 Found/', $response)) {
+            $response = $client->init()
+                ->setCookies($cookies)
+                ->getHeaderResponse()->noBody()
+                ->post('https://www.facebook.com/login.php', [
+                    'email' => $email,
+                    'pass' => $password
+                ]);
+
+            if (!preg_match('/Location: (.*)/', $response, $matches) && !preg_match('/checkpoint/', $matches[1])) {
+                return false;
+            }
+
+        } return true;
+    }
 }
