@@ -14,11 +14,36 @@ class FacebookGraph extends FacebookOAuth
     {
         parent::__construct($config, $token);
 
-        if(empty($token)){
+        if (empty($token)) {
             $this->token['access_token'] = $this->config['client_id'] . '|' . $this->config['client_secret'];
         } else {
             $this->refreshToken();
         }
+    }
+
+
+    public function getPosts($id, $since)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $id . '/posts?fields=link,description,created_time,full_picture,status_type,message,type&since=' . $since . '&limit=100&access_token=' . $this->token['access_token']);
+
+        $data = json_decode($data, true);
+
+        if (empty($data['data'])) {
+            return [];
+        }
+
+        $result = $data['data'];
+
+        while (!empty($data['paging']['next'])) {
+            $data = $client->init()->get($data['paging']['next']);
+            $data = json_decode($data, true);
+
+            $result = array_merge($data['data'], $result);
+        }
+        return $result;
+
     }
 
     public function getComments($id)
@@ -69,7 +94,7 @@ class FacebookGraph extends FacebookOAuth
         } else if (preg_match('/-(\d+)$/', $name, $matches)) {
             $name = $matches[1];
         }
-        $data = $client->init()->get($this->graph_endpoint . $name . '?fields=fan_count&access_token=' . $this->token['access_token']);
+        $data = $client->init()->get($this->graph_endpoint . $name . '?fields=about,fan_count,link,name,picture{url},cover,category,description_html&access_token=' . $this->token['access_token']);
 
         return json_decode($data, true);
     }
