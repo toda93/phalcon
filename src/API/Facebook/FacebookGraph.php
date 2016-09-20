@@ -207,12 +207,28 @@ class FacebookGraph extends FacebookOAuth
         return false;
     }
 
-    public function postPage($id, $fields)
+    public function changePageInfo($id, $fields)
     {
         $client = new HttpClient();
 
 
         $data = $client->init()->post($this->graph_endpoint . $id . '?access_token=' . $this->getPageToken($id), $fields);
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['success'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function postPageFeed($id, $fields)
+    {
+        $client = new HttpClient();
+
+
+        $data = $client->init()->post($this->graph_endpoint . $id . '/feed?access_token=' . $this->getPageToken($id), $fields);
 
         $data = json_decode($data, true);
 
