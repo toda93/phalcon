@@ -105,8 +105,9 @@ abstract class FacebookOAuth
             if (preg_match('/Location: (.*)/', $response, $matches)) {
                 if(preg_match('/id=(\d+)/', $matches[1], $matches2)){
                     return $matches2[1];
+                } else {
+                    return str_replace('https://www.facebook.com/', '', $matches[1]);
                 }
-                return $matches[1];
             }
         }
         return false;
