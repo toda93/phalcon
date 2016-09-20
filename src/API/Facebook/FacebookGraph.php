@@ -170,13 +170,11 @@ class FacebookGraph extends FacebookOAuth
         return false;
     }
 
-    public function uploadPagePhoto($id, $url)
+    public function uploadPagePhoto($id, $fields)
     {
         $client = new HttpClient();
 
-        $data = $client->init()->post($this->graph_endpoint . $id . '/photos?access_token=' . $this->getPageToken($id), [
-            'url' => $url
-        ]);
+        $data = $client->init()->post($this->graph_endpoint . $id . '/photos?access_token=' . $this->getPageToken($id), $fields);
 
         $data = json_decode($data, true);
 
@@ -190,7 +188,9 @@ class FacebookGraph extends FacebookOAuth
     {
         $client = new HttpClient();
 
-        $photo_id = $this->uploadPagePhoto($id, $url);
+        $photo_id = $this->uploadPagePhoto($id, [
+            'url' => $url
+        ]);
 
         if (!empty($photo_id)) {
 
