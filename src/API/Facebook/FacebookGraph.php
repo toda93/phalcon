@@ -142,103 +142,6 @@ class FacebookGraph extends FacebookOAuth
         return json_decode($data, true);
     }
 
-    public function getPagePicture($id)
-    {
-        $client = new HttpClient();
-
-        $data = $client->init()->get($this->graph_endpoint . $id . '/picture?redirect=false&height=350&width=350&access_token=' . $this->token['access_token']);
-
-        return json_decode($data, true);
-
-    }
-
-    public function uploadPagePicture($id, $url)
-    {
-        $client = new HttpClient();
-
-        $token = $this->getPageToken($id);
-
-        $data = $client->init()->post($this->graph_endpoint . $id . '/picture?access_token=' . $token, [
-            'picture' => $url
-        ]);
-
-        $data = json_decode($data, true);
-
-        if (!empty($data['success'])) {
-            return true;
-        }
-        return false;
-    }
-
-    public function uploadPagePhoto($id, $fields)
-    {
-        $client = new HttpClient();
-
-        $data = $client->init()->post($this->graph_endpoint . $id . '/photos?access_token=' . $this->getPageToken($id), $fields);
-
-        $data = json_decode($data, true);
-
-        if (!empty($data['id'])) {
-            return $data['id'];
-        }
-        return false;
-    }
-
-    public function uploadPageCover($id, $url)
-    {
-        $client = new HttpClient();
-
-        $photo_id = $this->uploadPagePhoto($id, [
-            'url' => $url
-        ]);
-
-        if (!empty($photo_id)) {
-
-            $data = $client->init()->post($this->graph_endpoint . $id . '?access_token=' . $this->getPageToken($id), [
-                'cover' => $photo_id
-            ]);
-
-            $data = json_decode($data, true);
-
-            if (!empty($data['success'])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function changePageInfo($id, $fields)
-    {
-        $client = new HttpClient();
-
-
-        $data = $client->init()->post($this->graph_endpoint . $id . '?access_token=' . $this->getPageToken($id), $fields);
-
-        $data = json_decode($data, true);
-
-        if (!empty($data['success'])) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function postPageFeed($id, $fields)
-    {
-        $client = new HttpClient();
-
-
-        $data = $client->init()->post($this->graph_endpoint . $id . '/feed?access_token=' . $this->getPageToken($id), $fields);
-
-        $data = json_decode($data, true);
-
-        if (!empty($data['success'])) {
-            return true;
-        }
-
-        return false;
-    }
-
     public function getPageInfoByUrl($url)
     {
         $url = rtrim($url, '/');
@@ -253,5 +156,114 @@ class FacebookGraph extends FacebookOAuth
         return $this->getPageInfo($name);
     }
 
+
+    public function getPagePicture($id)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $id . '/picture?redirect=false&height=350&width=350&access_token=' . $this->token['access_token']);
+
+        return json_decode($data, true);
+
+    }
+
+    public function getPageVideoSource($fanpage_id, $video_id)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $video_id . '?fields=source&access_token=' . $this->getPageToken($fanpage_id));
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['source'])) {
+            return $data['source'];
+        }
+        return false;
+    }
+
+    public function uploadPagePicture($fanpage_id, $url)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->post($this->graph_endpoint . $fanpage_id . '/picture?access_token=' . $this->getPageToken($fanpage_id), [
+            'picture' => $url
+        ]);
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['success'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function uploadPagePhoto($fanpage_id, $fields)
+    {
+        $client = new HttpClient();
+
+        $data = $client->init()->post($this->graph_endpoint . $fanpage_id . '/photos?access_token=' . $this->getPageToken($fanpage_id), $fields);
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['id'])) {
+            return $data['id'];
+        }
+        return false;
+    }
+
+    public function uploadPageCover($fanpage_id, $url)
+    {
+        $client = new HttpClient();
+
+        $photo_id = $this->uploadPagePhoto($fanpage_id, [
+            'url' => $url
+        ]);
+
+        if (!empty($photo_id)) {
+
+            $data = $client->init()->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), [
+                'cover' => $photo_id
+            ]);
+
+            $data = json_decode($data, true);
+
+            if (!empty($data['success'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function changePageInfo($fanpage_id, $fields)
+    {
+        $client = new HttpClient();
+
+
+        $data = $client->init()->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), $fields);
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['success'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function postPageFeed($fanpage_id, $fields)
+    {
+        $client = new HttpClient();
+
+
+        $data = $client->init()->post($this->graph_endpoint . $fanpage_id . '/feed?access_token=' . $this->getPageToken($fanpage_id), $fields);
+
+        $data = json_decode($data, true);
+
+        if (!empty($data['success'])) {
+            return true;
+        }
+
+        return false;
+    }
 
 }
