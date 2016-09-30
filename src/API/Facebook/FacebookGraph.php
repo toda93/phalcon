@@ -22,22 +22,6 @@ class FacebookGraph extends FacebookOAuth
         }
     }
 
-    public function getMessengerName($id){
-
-        $client = new HttpClient();
-
-        $data = $client->init()->get($this->graph_endpoint . $id . '?access_token=' . $this->token['access_token']);
-
-
-        $data = json_decode($data, true);
-
-        if (empty($data['first_name'])) {
-            return 'bạn';
-        } else {
-            return $data['first_name'];
-        }
-    }
-
 
     public function getMyInfo()
     {
@@ -107,6 +91,22 @@ class FacebookGraph extends FacebookOAuth
     }
 
     /* ** fan page ** */
+
+    public function getMessengerName($fanpage_id, $id){
+
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $id . '?access_token=' . $this->getPageToken($fanpage_id));
+
+
+        $data = json_decode($data, true);
+
+        if (empty($data['first_name'])) {
+            return '';
+        } else {
+            return $data['first_name'] . ' ' . $data['last_name'];
+        }
+    }
 
     public function getPagePosts($id, $since)
     {
