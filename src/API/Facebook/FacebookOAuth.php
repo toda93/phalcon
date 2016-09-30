@@ -28,7 +28,7 @@ abstract class FacebookOAuth
         $params = array(
             'scope' => $this->scope,
             'response_type' => 'code',
-            'auth_type' => 'reauthenticate',
+            'auth_type' => 'rerequest',
             'client_id' => $this->config['client_id'],
             'redirect_uri' => $this->config['callback'],
         );
