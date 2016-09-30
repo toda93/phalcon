@@ -22,6 +22,22 @@ class FacebookGraph extends FacebookOAuth
         }
     }
 
+    public function getMessengerName($id){
+
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $id . '/accounts?access_token=' . $this->token['access_token']);
+
+        $data = json_decode($data, true);
+
+        if (empty($data['first_name'])) {
+            return [];
+        } else {
+            return $data['first_name'];
+        }
+    }
+
+
     public function getMyInfo()
     {
         $client = new HttpClient();
