@@ -43,7 +43,6 @@ abstract class FacebookOAuth
         $params = array(
             'grant_type' => 'fb_exchange_token',
             'client_id' => $this->config['client_id'],
-            'redirect_uri' => $this->config['callback'],
             'client_secret' => $this->config['client_secret'],
             'fb_exchange_token' => $this->token['access_token']
         );
