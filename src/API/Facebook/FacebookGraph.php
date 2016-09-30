@@ -28,8 +28,6 @@ class FacebookGraph extends FacebookOAuth
 
         $data = $client->init()->get($this->graph_endpoint . $id . '?access_token=' . $this->token['access_token']);
 
-        return $data;
-
 
         $data = json_decode($data, true);
 
