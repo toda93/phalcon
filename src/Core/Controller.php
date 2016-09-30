@@ -15,8 +15,10 @@ class Controller extends ControllerRoot
 
     public function initialize()
     {
-        $this->checkCSRF();
 
+        if(page('csrf')){
+            $this->checkCSRF();
+        }
 
         if ($this->session->has('old')) {
             $this->old = new OldValue($this->session->get('old'));
