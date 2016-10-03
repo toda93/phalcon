@@ -33,7 +33,7 @@ abstract class FacebookOAuth
             'redirect_uri' => $this->config['callback'],
         );
 
-        $url = 'https://www.facebook.com/v2.6/dialog/oauth?' . http_build_query($params);
+        $url = 'https://www.facebook.com/v2.7/dialog/oauth?' . http_build_query($params);
         return $url;
     }
 
@@ -43,7 +43,6 @@ abstract class FacebookOAuth
         $params = array(
             'grant_type' => 'fb_exchange_token',
             'client_id' => $this->config['client_id'],
-            'redirect_uri' => $this->config['callback'],
             'client_secret' => $this->config['client_secret'],
             'fb_exchange_token' => $this->token['access_token']
         );
@@ -58,7 +57,7 @@ abstract class FacebookOAuth
     public function getTokenByCode($code)
     {
         $client = new HttpClient();
-        $response = $client->init()->post('https://graph.facebook.com/v2.6/oauth/access_token', [
+        $response = $client->init()->post('https://graph.facebook.com/v2.7/oauth/access_token', [
             'code' => $code,
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],
@@ -83,41 +82,53 @@ abstract class FacebookOAuth
 
     public function checkAccount($email, $password)
     {
-        $client = new \Toda\Client\HttpClient();
+        $client = new HttpClient();
 
-        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.phpr.php?locale=vi_VN');
+        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.php?locale=en_US');
 
         $response = $client->init()
             ->setCookies()
             ->getHeaderResponse()
-            ->addHeader('Upgrade-Insecure-Requests','1')
-            ->addHeader('Content-Type','application/x-www-form-urlencoded')
-            ->addHeader('Referer','https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US')
-            ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
+            ->post('https://www.facebook.com/login.php?locale=en_US', [
                 'email' => $email,
                 'pass' => $password
             ]);
 
         if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
-            return true;
+
+            $response = $client->init()
+                ->setCookies()
+                ->getHeaderResponse()
+                ->get('https://www.facebook.com/me');
+
+            if (preg_match('/Location: (.*)/', $response, $matches)) {
+                if ($matches[1] == 'https://www.facebook.com/ ') {
+                    return false;
+                } else if (preg_match('/id=(\d+)/', $matches[1], $matches2)) {
+                    return $matches2[1];
+                } else {
+                    return str_replace('https://www.facebook.com/', '', $matches[1]);
+                }
+            }
         }
         return false;
     }
 
     public function tryAccount($email, $password, $cookies)
     {
-        $client = new \Toda\Client\HttpClient();
+
+        $client = new HttpClient();
 
         $response = $client->init()
             ->setCookies($cookies)
             ->getHeaderResponse()
-            ->get('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US');
+            ->get('https://www.facebook.com/login.php?locale=en_US');
 
         if (!preg_match('/HTTP\/1\.1 302 Found/', $response)) {
             $response = $client->init()
                 ->setCookies($cookies)
                 ->getHeaderResponse()
-                ->post('https://www.facebook.com/login.php?login_attempt=1&lwv=110&locale=en_US', [
+                ->post('https://www.facebook.com/login.php?locale=en_US', [
                     'email' => $email,
                     'pass' => $password
                 ]);
@@ -129,4 +140,6 @@ abstract class FacebookOAuth
         }
         return true;
     }
+
+
 }

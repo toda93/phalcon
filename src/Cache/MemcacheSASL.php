@@ -115,7 +115,7 @@ class MemcacheSASL
         $data = $this->_recv();
 
         if ($data['status']) {
-            throw new Exception($data['body'], $data['status']);
+            throw new \Exception($data['body'], $data['status']);
         }
     }
 

@@ -18,21 +18,13 @@ class APIManager
             $token['access_token'] = $this->config->facebook->$select->access_token;
         }
 
-        return new $cls([
-            'client_id' => $this->config->facebook->$select->client_id,
-            'client_secret' => $this->config->facebook->$select->client_secret,
-            'callback' => $this->config->facebook->$select->callback
-        ], $token);
+        return new $cls((array)$this->config->facebook->$select, $token);
     }
 
     public function google($select, $token = [])
     {
         $cls = 'Toda\API\Google\Google' . $this->config->facebook->$select->type;
 
-        return new $cls([
-            'client_id' => $this->config->facebook->$select->client_id,
-            'client_secret' => $this->config->facebook->$select->client_secret,
-            'callback' => $this->config->facebook->$select->callback
-        ], $token);
+        return new $cls((array)$this->config->goolge->$select, $token);
     }
 }
