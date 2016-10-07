@@ -26,6 +26,7 @@ abstract class FacebookOAuth
     public function getUrlAuthCode()
     {
         $params = array(
+            'return_scopes' => 'true',
             'scope' => $this->scope,
             'response_type' => 'code',
             'auth_type' => 'rerequest',
