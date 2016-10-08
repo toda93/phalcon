@@ -15,7 +15,6 @@ class Controller extends ControllerRoot
 
     public function initialize()
     {
-
         if(page('csrf')){
             $this->checkCSRF();
         }
@@ -24,7 +23,6 @@ class Controller extends ControllerRoot
             $this->old = new OldValue($this->session->get('old'));
             $this->session->remove('old');
         }
-
 
         if ($this->session->has('auth')) {
             $this->auth = $this->session->get('auth');
