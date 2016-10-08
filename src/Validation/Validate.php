@@ -12,7 +12,7 @@ class Validate
         'regex' => 'The %s not match.',
         'number' => 'The %s is not a number',
         'min' => 'The %s must be at least %s.',
-        'max'=> 'The %s may not be greater than %s.',
+        'max' => 'The %s may not be greater than %s.',
         'confirmed' => 'The %s confirmation does not match.',
     ];
 
@@ -26,33 +26,49 @@ class Validate
         return empty($value) || preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value) ? '' : sprintf(self::$message['email'], $name);
     }
 
-    public static function unique($name, $value, $param){
+    public static function unique($name, $value, $param)
+    {
+        $params = explode(',', $param);
+
         $message = '';
-        if(!empty($value)){
-            if($param::where($name, $value)->first()){
+        if (!empty($value)) {
+
+            $query = $params[0]::where($name, $value);
+
+            if (!empty($params[1])) {
+                $query->andWhere('id', '!=', $params[1]);
+            }
+
+            if ($query->first()) {
                 $message = sprintf(self::$message['unique'], $name);
             }
         }
         return $message;
     }
 
-    public static function number($name, $value, $param){
-        return empty($value) || preg_match('/^[-]?[0-9]*\.?[0-9]+$/',$value) ? '' : sprintf(self::$message['number'], $name);
+    public static function number($name, $value, $param)
+    {
+        return empty($value) || preg_match('/^[-]?[0-9]*\.?[0-9]+$/', $value) ? '' : sprintf(self::$message['number'], $name);
     }
 
-    public static function regex($name, $value, $param){
+    public static function regex($name, $value, $param)
+    {
+
         return empty($value) || preg_match($param, $value) ? '' : sprintf(self::$message['regex'], $name);
     }
 
-    public static function min($name, $value, $param){
+    public static function min($name, $value, $param)
+    {
         return empty($value) || (strlen($value) >= $param) ? '' : sprintf(self::$message['min'], $name, $param);
     }
 
-    public static function max($name, $value, $param){
+    public static function max($name, $value, $param)
+    {
         return empty($value) || (strlen($value) <= $param) ? '' : sprintf(self::$message['max'], $name, $param);
     }
 
-    public static function confirmed($name, $value, $param){
+    public static function confirmed($name, $value, $param)
+    {
         return empty($value) || ($value === $param) ? '' : sprintf(self::$message['confirmed'], $name);
     }
 }
