@@ -71,7 +71,7 @@ class FacebookGraph extends FacebookOAuth
 
         $client = new HttpClient();
 
-        $data = $client->init()->get($this->graph_endpoint . $post_id . '?fields=full_picture&access_token=' . $this->token['access_token']);
+        $data = $client->init()->get($this->graph_endpoint . $post_id . '?fields=shares,comments.limit(0).summary(1),reactions.limit(0).summary(1)&access_token=' . $this->token['access_token']);
 
         $data = json_decode($data, true);
 
@@ -79,8 +79,6 @@ class FacebookGraph extends FacebookOAuth
         if (empty($data['shares'])) {
             return false;
         }
-
-        var_dump($data); exit;
 
         return [
             'count_share' => $data['shares']['count'],
