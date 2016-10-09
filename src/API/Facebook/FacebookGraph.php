@@ -80,6 +80,8 @@ class FacebookGraph extends FacebookOAuth
             return false;
         }
 
+        var_dump($data); exit;
+
         return [
             'count_share' => $data['shares']['count'],
             'count_like' => $data['reactions']['summary']['total_count'],
