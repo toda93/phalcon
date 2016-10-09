@@ -18,7 +18,7 @@ class Validate
 
     public static function required($name, $value, $param)
     {
-        return !empty($value) ? '' : sprintf(self::$message['required'], $name);
+        return !is_null($value) ? '' : sprintf(self::$message['required'], $name);
     }
 
     public static function email($name, $value, $param)

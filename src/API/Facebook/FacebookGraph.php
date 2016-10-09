@@ -47,6 +47,47 @@ class FacebookGraph extends FacebookOAuth
         return $data;
     }
 
+    public function getPostImage($post_id)
+    {
+        $post_id = $this->trimPostId($post_id);
+
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $post_id . '?fields=full_picture&access_token=' . $this->token['access_token']);
+
+        $data = json_decode($data, true);
+
+
+        if (empty($data['full_picture'])) {
+            return false;
+        }
+
+        return $data['full_picture'];
+    }
+
+    public function countPost($post_id)
+    {
+        $post_id = $this->trimPostId($post_id);
+
+        $client = new HttpClient();
+
+        $data = $client->init()->get($this->graph_endpoint . $post_id . '?fields=full_picture&access_token=' . $this->token['access_token']);
+
+        $data = json_decode($data, true);
+
+
+        if (empty($data['shares'])) {
+            return false;
+        }
+
+        return [
+            'count_share' => $data['shares']['count'],
+            'count_like' => $data['reactions']['summary']['total_count'],
+            'count_comment' => $data['comments']['summary']['total_count'],
+        ];
+    }
+
+
     public function getComments($post_id)
     {
         $post_id = $this->trimPostId($post_id);
@@ -88,7 +129,7 @@ class FacebookGraph extends FacebookOAuth
         return $result;
     }
 
-    public function replyComment($fanpage_id, $comment_id,  $message)
+    public function replyComment($fanpage_id, $comment_id, $message)
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
