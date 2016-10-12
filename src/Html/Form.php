@@ -106,7 +106,7 @@ class Form {
 
     public function select(array $values , array $options = []){
         $this->opts = $options;
-        $this->html = "<select name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<select name='{$this->name}' {options}>";
 
         $temp = $this->buildValue();
 
@@ -141,9 +141,17 @@ class Form {
         return $this;
     }
 
-    public function checkbox(array $options = []){
+    public function checkbox($value, array $options = []){
         $this->opts = $options;
-        $this->html = "<input type='checkbox' name='{$this->name}' {options} value='{value}'>";
+
+        $temp = $this->buildValue();
+
+        $this->html = "<input type='checkbox' name='{$this->name}' {options} value='$value'";
+        if ($temp == $value) {
+            $this->html .= ' checked';
+        }
+        $this->html .= ">";
+
         return $this;
     }
 
