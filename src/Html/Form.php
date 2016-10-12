@@ -106,18 +106,38 @@ class Form {
 
     public function select(array $values , array $options = []){
         $this->opts = $options;
-        $this->html = "<select name='{$this->name}' {options}>";
+        $this->html = "<select name='{$this->name}' {options} value='{value}'>";
 
-        $value = $this->buildValue();
+        $temp = $this->buildValue();
 
         foreach($values as $key=>$value){
-            if($value == $key){
+            if ($temp == $key) {
                 $this->html .= "<option value='$key' selected>$value</option>";
             } else {
                 $this->html .= "<option value='$key'>$value</option>";
             }
         }
         $this->html .= "</select>";
+        return $this;
+    }
+
+
+    public function checkboxList(array $values, array $options = array())
+    {
+        $this->opts = $options;
+        $temp = $this->buildValue();
+
+        $this->html = "";
+
+        foreach ($values as $key => $value) {
+
+            $this->html .= "<span class='checkbox-item'><input type='checkbox' name='{$this->name}[]' value='$key'";
+
+            if ($temp == $key) {
+                $this->html .= ' checked';
+            }
+            $this->html .= "{options}> $value </span>";
+        }
         return $this;
     }
 

@@ -8,7 +8,6 @@ class FacebookGraph extends FacebookOAuth
 {
     protected $graph_endpoint = 'https://graph.facebook.com/v2.7/';
 
-    protected $scope = 'email,user_hometown,user_religion_politics,publish_actions,user_likes,user_status,user_about_me,user_location,user_tagged_places,user_birthday,user_photos,user_videos,user_education_history,user_posts,user_website,user_friends,user_relationship_details,user_work_history,user_games_activity,user_relationships,ads_management,pages_messaging,read_page_mailboxes,ads_read,rsvp_event,business_management,pages_messaging_phone_number,user_events,manage_pages,pages_messaging_subscriptions,user_managed_groups,pages_manage_cta,pages_show_list,pages_manage_instant_articles,publish_pages,user_actions.books,user_actions.music,user_actions.video,user_actions.fitness,user_actions.news,read_audience_network_insights,read_custom_friendlists,read_insights';
     protected $fanpage_token = null;
 
     public function __construct($config, $token = [])
