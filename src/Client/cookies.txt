@@ -10,3 +10,6 @@
 #HttpOnly_.facebook.com	TRUE	/	TRUE	0	s	Aa4XQfkFopbUgmHe.BX98Dg
 #HttpOnly_.facebook.com	TRUE	/	TRUE	0	pl	n
 #HttpOnly_.facebook.com	TRUE	/	TRUE	1538926559	lu	RhK3FdY8L6GORlOpO_PLdzGQ
+#HttpOnly_manager.sunfrogshirts.com	FALSE	/	FALSE	1476693614	CFID	40506250
+#HttpOnly_manager.sunfrogshirts.com	FALSE	/	FALSE	1476693614	CFTOKEN	7ca277b172f3f88d-FE71B36B-155D-1590-6AEA543DC34F82AD
+#HttpOnly_manager.sunfrogshirts.com	FALSE	/	FALSE	0	BNI_OatmealRaisin	0000000000000000000000005a00560a00000000

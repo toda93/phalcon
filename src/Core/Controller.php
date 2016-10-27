@@ -15,28 +15,21 @@ class Controller extends ControllerRoot
 
     public function initialize()
     {
-
-        if(page('csrf')){
+        if (!$this->run_background) {
             $this->checkCSRF();
-        }
 
-        if ($this->session->has('old')) {
-            $this->old = new OldValue($this->session->get('old'));
-            $this->session->remove('old');
+            if ($this->session->has('old')) {
+                $this->old = new OldValue($this->session->get('old'));
+                $this->session->remove('old');
+            }
         }
-
 
         if ($this->session->has('auth')) {
             $this->auth = $this->session->get('auth');
         }
 
-        $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
 
-        //        $origin = empty($this->request->getServer('HTTP_ORIGIN')) ? '' : $this->request->getServer('HTTP_ORIGIN');
-//        $origin = preg_replace('/http(s?):\/\//', '', $origin);
-//        if (!empty($origin) && strpos($this->request->getServer('HTTP_HOST'), $origin) >= 0) {
-//            $this->response->setHeader("Access-Control-Allow-Origin", "*");
-//        }
+        $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
 
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
 
