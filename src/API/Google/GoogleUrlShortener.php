@@ -25,10 +25,10 @@ class GoogleUrlShortener extends GoogleOAuth
 
     public function sort($url)
     {
-        var_dump($url);
-
-
         $client = new HttpClient();
+
+
+
 
         $data = $client->init()
             ->addHeader('Authorization', 'Bearer ' . $this->token['access_token'])

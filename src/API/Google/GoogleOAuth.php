@@ -44,12 +44,12 @@ class GoogleOAuth
         if ($this->token['expired'] <= time()) {
 
             $client = new HttpClient();
-            $token = $client->init()->get('https://www.googleapis.com/oauth2/v4/token?' . http_build_query([
+            $token = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
                     'refresh_token' => $this->token['refresh_token'],
                     'client_id' => $this->config['client_id'],
                     'client_secret' => $this->config['client_secret'],
                     'grant_type' => 'refresh_token'
-                ]));
+                ]);
 
             $token = json_decode($token, true);
 
