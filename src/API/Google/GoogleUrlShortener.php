@@ -33,7 +33,7 @@ class GoogleUrlShortener extends GoogleOAuth
         $data = $client->init()
             ->addHeader('Authorization', 'Bearer ' . $this->token['access_token'])
             ->addHeader('Content-Type', 'application/json')
-            ->post($this->short_endpoint, '{"longUrl": "http://olyshirt.com/ewqqweew"}', false);
+            ->post($this->short_endpoint, '{"longUrl": "' . $url . '"}', false);
 
         $data = json_decode($data, true);
 
