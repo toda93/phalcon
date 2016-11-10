@@ -131,7 +131,26 @@ class Form {
 
         foreach ($values as $key => $value) {
 
-            $this->html .= "<span class='checkbox-item'><input type='checkbox' name='{$this->name}[]' value='$key'";
+            $this->html .= "<span class='checkbox-inline'><input type='checkbox' name='{$this->name}[]' value='$key'";
+
+            if ($temp == $key) {
+                $this->html .= ' checked';
+            }
+            $this->html .= "{options}> $value </span>";
+        }
+        return $this;
+    }
+
+    public function radioList(array $values, array $options = array())
+    {
+        $this->opts = $options;
+        $temp = $this->buildValue();
+
+        $this->html = "";
+
+        foreach ($values as $key => $value) {
+
+            $this->html .= "<span class='radio-inline'><input type='radio' name='{$this->name}' value='$key'";
 
             if ($temp == $key) {
                 $this->html .= ' checked';

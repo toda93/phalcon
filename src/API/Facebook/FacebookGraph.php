@@ -58,9 +58,8 @@ class FacebookGraph extends FacebookOAuth
 
 
         if (empty($data['full_picture'])) {
-            return false;
+            return '';
         }
-
         return $data['full_picture'];
     }
 
@@ -76,7 +75,7 @@ class FacebookGraph extends FacebookOAuth
 
 
         if (empty($data['shares'])) {
-            return false;
+            return [];
         }
 
         return [
@@ -85,7 +84,6 @@ class FacebookGraph extends FacebookOAuth
             'count_comment' => $data['comments']['summary']['total_count'],
         ];
     }
-
 
     public function getComments($post_id)
     {
@@ -310,7 +308,7 @@ class FacebookGraph extends FacebookOAuth
         if (!empty($data['id'])) {
             return $data['id'];
         }
-        return false;
+        return '';
     }
 
     public function uploadPageCover($fanpage_id, $url)

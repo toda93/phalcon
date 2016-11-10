@@ -23,8 +23,8 @@ class APIManager
 
     public function google($select, $token = [])
     {
-        $cls = 'Toda\API\Google\Google' . $this->config->facebook->$select->type;
+        $cls = 'Toda\API\Google\Google' . $this->config->google->$select->type;
 
-        return new $cls((array)$this->config->goolge->$select, $token);
+        return new $cls((array)$this->config->google->$select, $token);
     }
 }
