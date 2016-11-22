@@ -2,6 +2,8 @@
 
 namespace Toda\API\Facebook;
 
+use Toda\Client\HttpClient;
+
 class FacebookClawler extends FacebookOAuth
 {
     private $username = null;
@@ -51,7 +53,6 @@ class FacebookClawler extends FacebookOAuth
 
     public function tryAccount()
     {
-
         $client = new HttpClient();
 
         $response = $client->init()
@@ -76,14 +77,14 @@ class FacebookClawler extends FacebookOAuth
         return true;
     }
 
-    public function addTester($id)
+    public function addTester($app_id, $id)
     {
         if ($this->tryAccount()) {
-            $url = "https://developers.facebook.com/apps/{$this->config['client_id']}/async/roles/add/?dpr=1";
+            $url = "https://developers.facebook.com/apps/{$app_id}/async/roles/add/?dpr=1";
 
             $client = new HttpClient();
 
-            $html = $client->init()->setCookies($this->config['cookies'])->get('https://m.facebook.com/pages/create');
+            $html = $client->init()->setCookies($this->cookies)->get('https://m.facebook.com/pages/create');
 
             if (preg_match("/name=\"fb_dtsg\" value=\"(.*?)\"/", $html, $matches)) {
 
@@ -93,9 +94,40 @@ class FacebookClawler extends FacebookOAuth
                     'user_id_or_vanitys[0]' => $id,
                     '__user' => $this->config['facebook_id']
                 ]);
-                return true;
+                return [
+                    'status' => 0,
+                    'message' => 'Success'
+                ];
             }
         };
-        return false;
+        return [
+            'status' => 0,
+            'message' => 'Login Failed'
+        ];
+    }
+
+    public function findUser($str)
+    {
+        if ($this->tryAccount()) {
+            $client = new HttpClient();
+
+            $html = $client->init()
+                ->setCookies($this->cookies)
+                ->get("https://m.facebook.com/search/people/?q=$str");
+
+            echo $html; exit;
+
+
+
+            return [
+                'status' => 1,
+                'message' => 'Success',
+                'data' => ''
+            ];
+        }
+        return [
+            'status' => 0,
+            'message' => 'Login Failed'
+        ];
     }
 }
