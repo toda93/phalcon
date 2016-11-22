@@ -27,9 +27,6 @@ class GoogleUrlShortener extends GoogleOAuth
     {
         $client = new HttpClient();
 
-
-
-
         $data = $client->init()
             ->addHeader('Authorization', 'Bearer ' . $this->token['access_token'])
             ->addHeader('Content-Type', 'application/json')

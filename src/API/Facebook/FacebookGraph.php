@@ -145,28 +145,6 @@ class FacebookGraph extends FacebookOAuth
         return false;
     }
 
-    public function addTester($id)
-    {
-        $url = "https://developers.facebook.com/apps/{$this->config['client_id']}/async/roles/add/?dpr=1";
-
-        $client = new HttpClient();
-
-        $this->tryAccount($this->config['email'], $this->config['password'], $this->config['cookies']);
-
-        $html = $client->init()->setCookies($this->config['cookies'])->get('https://m.facebook.com/pages/create');
-
-
-        if (preg_match("/name=\"fb_dtsg\" value=\"(.*?)\"/", $html, $matches)) {
-
-            $client->init()->setCookies($this->config['cookies'])->getHeaderResponse()->post($url, [
-                'fb_dtsg' => $matches[1],
-                'role' => 'testers',
-                'user_id_or_vanitys[0]' => $id,
-                '__user' => $this->config['facebook_id']
-            ]);
-        }
-    }
-
     /* ** fan page ** */
 
     public function getMessengerName($fanpage_id, $user_id)

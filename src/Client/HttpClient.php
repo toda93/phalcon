@@ -59,17 +59,22 @@ class HttpClient
         if (empty($path)) {
             $path = __DIR__ . '/cookies.txt';
         }
-        if(!$keep){
+        if (!$keep) {
             file_put_contents($path, '');
         }
 
         return $this->setOpt(CURLOPT_COOKIEFILE, $path)
-                    ->setOpt(CURLOPT_COOKIEJAR, $path);
+            ->setOpt(CURLOPT_COOKIEJAR, $path);
     }
 
     public function getHeaderResponse()
     {
         return $this->setOpt(CURLOPT_HEADER, true);
+    }
+
+    public function nobody()
+    {
+        return $this->setOpt(CURLOPT_NOBODY, true);
     }
 
     public function post($url, $data, $build = true)
@@ -91,12 +96,14 @@ class HttpClient
         if ($build == true) {
             $data = http_build_query($data);
         }
-        $this->setOpt(CURLOPT_URL, $url)
-            ->setOpt(CURLOPT_POST, true)
-            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
-            ->setOpt(CURLOPT_URL, $url);
-        $result = $this->execute();
 
+        $this->setOpt(CURLOPT_URL, $url)
+            ->setOpt(CURLOPT_POST, 1)
+            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
+            ->setOpt(CURLOPT_POSTFIELDS, $data)
+            ->setOpt(CURLOPT_URL, $url);
+
+        $result = $this->execute();
         return $result;
     }
 
@@ -107,4 +114,28 @@ class HttpClient
         $result = $this->execute();
         return $result;
     }
+
+
+//    public function put($url, $data, $build = true)
+//    {
+//        if ($build == true) {
+//            $data = http_build_query($data);
+//        }
+//
+//        $f = fopen(__DIR__ . '/requests.txt', 'w');
+//
+//        $this->setOpt(CURLOPT_URL, $url)
+//            ->setOpt(CURLOPT_POST, 1)
+//            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
+//            ->setOpt(CURLOPT_POSTFIELDS, $data)
+//            ->setOpt(CURLOPT_URL, $url)
+//            ->setOpt(CURLOPT_VERBOSE, true)
+//            ->setOpt(CURLOPT_STDERR, $f);
+//
+//        $result = $this->execute();
+//
+//        fclose($f);
+//
+//        return $result;
+//    }
 }
