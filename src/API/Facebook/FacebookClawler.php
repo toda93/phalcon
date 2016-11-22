@@ -2,7 +2,7 @@
 
 namespace Toda\API\Facebook;
 
-class FacebookGraph extends FacebookOAuth
+class FacebookClawler extends FacebookOAuth
 {
     private $username = null;
     private $password = null;
