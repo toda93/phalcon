@@ -43,6 +43,7 @@ class Form {
     
     public static function begin($old, array $options = []){
         echo "<form" . self::buildOption($options) . ">";
+        echo "<input type='hidden' name='_csrf' value='" . csrfToken() . "' >";
         return new self($old);
     }
 

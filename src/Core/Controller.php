@@ -11,7 +11,6 @@ use Toda\Validation\Validate;
 class Controller extends ControllerRoot
 {
     protected $old = null;
-    protected $auth = null;
 
     public function initialize()
     {
@@ -22,21 +21,14 @@ class Controller extends ControllerRoot
                 $this->old = new OldValue($this->session->get('old'));
                 $this->session->remove('old');
             }
+            $this->view->setVars([
+                'old' => $this->old
+            ]);
         }
-
-        if ($this->session->has('auth')) {
-            $this->auth = $this->session->get('auth');
-        }
-
 
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
 
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
-
-        $this->view->setVars([
-            'auth' => $this->auth,
-            'old' => $this->old
-        ]);
     }
 
     protected function middleware($middleware, array $options = [])
@@ -54,25 +46,19 @@ class Controller extends ControllerRoot
 
     protected function checkCSRF()
     {
-        $flag = false;
-        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
-
-            $flag = ($this->session->get('token') != $this->cookies->get('token')) ? true : false;
-            $this->session->remove('token');
-            $this->cookies->get('token')->delete();
-        }
-        if (!$this->session->has('token') || !$this->cookies->has('token')) {
-            $token = uniqid();
-            $this->cookies->set('token', $token);
-            $this->session->set('token', $token);
+        if (!$this->session->has('token')) {
+            $this->session->set('token', uniqid());
         }
 
-        if ($flag) {
-            return $this->dispatcher->forward([
-                'controller' => 'error',
-                'action' => 'show403',
-                'params' => ['message' => 'CSRF token not mismatch'],
-            ]);
+        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
+
+            if ($this->request->get('_csrf') != $this->session->get('token')) {
+                return $this->dispatcher->forward([
+                    'controller' => 'errors',
+                    'action' => 'show403',
+                    'params' => ['message' => 'CSRF token not mismatch'],
+                ]);
+            }
         }
     }
 
