@@ -42,13 +42,13 @@ class FacebookOAuth
 
             $client = new HttpClient();
 
-            $token = $client->init()->get('https://graph.facebook.com/oauth/access_token?' . http_build_query([
+            $res = $client->init()->get('https://graph.facebook.com/oauth/access_token?' . http_build_query([
                     'grant_type' => 'fb_exchange_token',
                     'client_id' => $this->config['client_id'],
                     'client_secret' => $this->config['client_secret'],
                     'fb_exchange_token' => $this->token['access_token']
                 ]));
-            $token = json_decode($token, true);
+            $token = json_decode($res, true);
 
             if (!empty($token['access_token'])) {
                 $this->token['access_token'] = $token['access_token'];
@@ -59,14 +59,14 @@ class FacebookOAuth
     public function getTokenByCode($code)
     {
         $client = new HttpClient();
-        $response = $client->init()->post('https://graph.facebook.com/v2.7/oauth/access_token', [
+        $res = $client->init()->post('https://graph.facebook.com/v2.7/oauth/access_token', [
             'code' => $code,
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],
             'redirect_uri' => $this->config['callback']
         ]);
 
-        $token = json_decode($response, true);
+        $token = json_decode($res, true);
 
         $result = [];
         if (!array_key_exists('error', $token)) {

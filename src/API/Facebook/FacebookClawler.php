@@ -21,11 +21,11 @@ class FacebookClawler extends FacebookOAuth
     {
         $client = new HttpClient();
 
-        $client->init()->setCookies(false, false)->get('https://www.facebook.com/login.php?locale=en_US');
+        $client->init()->useCookie(false, false)->get('https://www.facebook.com/login.php?locale=en_US');
 
         $response = $client->init()
-            ->setCookies()
-            ->getHeaderResponse()
+            ->useCookie()
+            ->responseHeader()
             ->post('https://www.facebook.com/login.php?locale=en_US', [
                 'email' => $this->username,
                 'pass' => $this->password
@@ -34,8 +34,8 @@ class FacebookClawler extends FacebookOAuth
         if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
 
             $response = $client->init()
-                ->setCookies()
-                ->getHeaderResponse()
+                ->useCookie()
+                ->responseHeader()
                 ->get('https://www.facebook.com/me');
 
             if (preg_match('/Location: (.*)/', $response, $matches)) {
@@ -56,14 +56,14 @@ class FacebookClawler extends FacebookOAuth
         $client = new HttpClient();
 
         $response = $client->init()
-            ->setCookies($this->cookies)
-            ->getHeaderResponse()
+            ->useCookie($this->cookies)
+            ->responseHeader()
             ->get('https://www.facebook.com/login.php?locale=en_US');
 
         if (!preg_match('/HTTP\/1\.1 302 Found/', $response)) {
             $response = $client->init()
-                ->setCookies($this->cookies)
-                ->getHeaderResponse()
+                ->useCookie($this->cookies)
+                ->responseHeader()
                 ->post('https://www.facebook.com/login.php?locale=en_US', [
                     'email' => $this->username,
                     'pass' => $this->password
@@ -84,11 +84,11 @@ class FacebookClawler extends FacebookOAuth
 
             $client = new HttpClient();
 
-            $html = $client->init()->setCookies($this->cookies)->get('https://m.facebook.com/pages/create');
+            $html = $client->init()->useCookie($this->cookies)->get('https://m.facebook.com/pages/create');
 
             if (preg_match("/name=\"fb_dtsg\" value=\"(.*?)\"/", $html, $matches)) {
 
-                $client->init()->setCookies($this->config['cookies'])->getHeaderResponse()->post($url, [
+                $client->init()->useCookie($this->config['cookies'])->responseHeader()->post($url, [
                     'fb_dtsg' => $matches[1],
                     'role' => 'testers',
                     'user_id_or_vanitys[0]' => $id,
@@ -112,7 +112,7 @@ class FacebookClawler extends FacebookOAuth
             $client = new HttpClient();
 
             $html = $client->init()
-                ->setCookies($this->cookies)
+                ->useCookie($this->cookies)
                 ->get("https://m.facebook.com/search/people/?q=$str");
 
             echo $html; exit;

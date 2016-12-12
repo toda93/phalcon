@@ -50,11 +50,19 @@ class Controller extends ControllerRoot
             $this->session->set('token', uniqid());
         }
 
-        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'errors') {
+        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
 
-            if ($this->request->get('_csrf') != $this->session->get('token')) {
+
+            if($this->request->isAjax()){
+                $token = $this->request-> getHeader('X-CSRF-TOKEN');
+            } else {
+                $token = $this->request->get('_csrf');
+            }
+
+            if ($token != $this->session->get('token')) {
+
                 return $this->dispatcher->forward([
-                    'controller' => 'errors',
+                    'controller' => 'error',
                     'action' => 'show403',
                     'params' => ['message' => 'CSRF token not mismatch'],
                 ]);

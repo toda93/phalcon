@@ -17,6 +17,10 @@ class GoogleOAuth
     {
         $this->config = $config;
         $this->token = $token;
+
+        if(!empty($this->token)){
+            $this->refreshToken();
+        }
     }
 
     public function getToken()
@@ -44,14 +48,14 @@ class GoogleOAuth
         if ($this->token['expired'] <= time()) {
 
             $client = new HttpClient();
-            $token = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
+            $res = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
                     'refresh_token' => $this->token['refresh_token'],
                     'client_id' => $this->config['client_id'],
                     'client_secret' => $this->config['client_secret'],
                     'grant_type' => 'refresh_token'
                 ]);
 
-            $token = json_decode($token, true);
+            $token = json_decode($res, true);
 
             if (!empty($token['access_token'])) {
                 $this->token['access_token'] = $token['access_token'];
@@ -64,7 +68,7 @@ class GoogleOAuth
     public function getTokenByCode($code)
     {
         $client = new HttpClient();
-        $response = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
+        $res = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
             'code' => $code,
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],
@@ -72,7 +76,7 @@ class GoogleOAuth
             'grant_type' => 'authorization_code',
         ]);
 
-        $token = json_decode($response, true);
+        $token = json_decode($res, true);
 
         $result = [];
         if (!array_key_exists('error', $token)) {

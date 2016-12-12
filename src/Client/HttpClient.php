@@ -13,48 +13,42 @@ class HttpClient
     private $ch = null;
     private $header = [];
 
-    public function init()
+    public function init($agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0')
     {
         $this->ch = curl_init();
-        $this->setOpt(CURLOPT_SSL_VERIFYHOST, false)
-            ->setOpt(CURLOPT_SSL_VERIFYPEER, false)
-            ->setOpt(CURLOPT_RETURNTRANSFER, true)
-            ->setOpt(CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
+        $this->addOption(CURLOPT_SSL_VERIFYHOST, false)
+            ->addOption(CURLOPT_SSL_VERIFYPEER, false)
+            ->addOption(CURLOPT_RETURNTRANSFER, true)
+            ->addOption(CURLOPT_USERAGENT, $agent);
 
-        return $this;
-    }
-
-    private function close()
-    {
-        curl_close($this->ch);
         return $this;
     }
 
     private function execute()
     {
         if (!empty($this->header)) {
-            $this->setOpt(CURLOPT_HTTPHEADER, $this->header);
+            $this->addOption(CURLOPT_HTTPHEADER, $this->header);
         }
         $result = curl_exec($this->ch);
 
         $this->header = [];
-        $this->close();
+        curl_close($this->ch);
         return $result;
     }
 
-    public function addHeader($param, $value)
+    public function addHeader($header)
     {
-        array_push($this->header, "$param: $value");
+        array_push($this->header, $header);
         return $this;
     }
 
-    public function setOpt($opt, $value)
+    public function addOption($opt, $value)
     {
         curl_setopt($this->ch, $opt, $value);
         return $this;
     }
 
-    public function setCookies($path = false, $keep = true)
+    public function useCookie($path = false, $keep = true)
     {
         if (empty($path)) {
             $path = __DIR__ . '/cookies.txt';
@@ -63,58 +57,45 @@ class HttpClient
             file_put_contents($path, '');
         }
 
-        return $this->setOpt(CURLOPT_COOKIEFILE, $path)
-            ->setOpt(CURLOPT_COOKIEJAR, $path);
+        return $this->addOption(CURLOPT_COOKIEFILE, $path)
+            ->addOption(CURLOPT_COOKIEJAR, $path);
     }
 
-    public function getHeaderResponse()
+    public function responseHeader($body = false)
     {
-        return $this->setOpt(CURLOPT_HEADER, true);
+        return $this->addOption(CURLOPT_NOBODY, !$body)
+            ->addOption(CURLOPT_HEADER, true);
+
     }
 
-    public function nobody()
+    public function follow()
     {
-        return $this->setOpt(CURLOPT_NOBODY, true);
-    }
-
-    public function post($url, $data, $build = true)
-    {
-        if ($build == true) {
-            $data = http_build_query($data);
-        }
-        $this->setOpt(CURLOPT_URL, $url)
-            ->setOpt(CURLOPT_POST, 1)
-            ->setOpt(CURLOPT_POSTFIELDS, $data)
-            ->setOpt(CURLOPT_URL, $url);
-        $result = $this->execute();
-
-        return $result;
-    }
-
-    public function put($url, $data, $build = true)
-    {
-        if ($build == true) {
-            $data = http_build_query($data);
-        }
-
-        $this->setOpt(CURLOPT_URL, $url)
-            ->setOpt(CURLOPT_POST, 1)
-            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
-            ->setOpt(CURLOPT_POSTFIELDS, $data)
-            ->setOpt(CURLOPT_URL, $url);
-
-        $result = $this->execute();
-        return $result;
+        return $this->addOption(CURLOPT_FOLLOWLOCATION, true);
     }
 
     public function get($url)
     {
-        $this->setOpt(CURLOPT_URL, $url);
+        $this->addOption(CURLOPT_URL, $url);
 
         $result = $this->execute();
         return $result;
     }
 
+    public function post($url, $data, $build = true)
+    {
+
+        $this->addOption(CURLOPT_POST, 1)
+            ->addOption(CURLOPT_POSTFIELDS, $build ? http_build_query($data) : $data)
+            ->addOption(CURLOPT_URL, $url);
+
+        return $this->get($url);
+    }
+
+    public function put($url, $data, $build = true)
+    {
+        return $this->addOption(CURLOPT_CUSTOMREQUEST, 'PUT')
+            ->post($url, $data, $build);
+    }
 
 //    public function put($url, $data, $build = true)
 //    {
@@ -124,13 +105,13 @@ class HttpClient
 //
 //        $f = fopen(__DIR__ . '/requests.txt', 'w');
 //
-//        $this->setOpt(CURLOPT_URL, $url)
-//            ->setOpt(CURLOPT_POST, 1)
-//            ->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT')
-//            ->setOpt(CURLOPT_POSTFIELDS, $data)
-//            ->setOpt(CURLOPT_URL, $url)
-//            ->setOpt(CURLOPT_VERBOSE, true)
-//            ->setOpt(CURLOPT_STDERR, $f);
+//        $this->addOption(CURLOPT_URL, $url)
+//            ->addOption(CURLOPT_POST, 1)
+//            ->addOption(CURLOPT_CUSTOMREQUEST, 'PUT')
+//            ->addOption(CURLOPT_POSTFIELDS, $data)
+//            ->addOption(CURLOPT_URL, $url)
+//            ->addOption(CURLOPT_VERBOSE, true)
+//            ->addOption(CURLOPT_STDERR, $f);
 //
 //        $result = $this->execute();
 //
