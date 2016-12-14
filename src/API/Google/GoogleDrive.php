@@ -6,8 +6,15 @@ use Toda\Client\HttpClient;
 
 class GoogleDrive extends GoogleOAuth
 {
-    public function uploadImage($image)
+    public function uploadImage($image, $folder = '')
     {
+        if(empty($folder)){
+
+        } else {
+
+        }
+
+
 
         $file_type = mime_content_type($image);
         $delimiter = '---------------------------' . uniqid();
@@ -18,6 +25,7 @@ class GoogleDrive extends GoogleOAuth
         $data .= json_encode([
                 "title" => basename($image),
                 "mimeType" => $file_type,
+                "parents" => $folder
             ]) . "\r\n";
 
         $data = '--' . $delimiter . "\r\n";
