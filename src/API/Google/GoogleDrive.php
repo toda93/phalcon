@@ -8,29 +8,22 @@ class GoogleDrive extends GoogleOAuth
 {
     public function uploadImage($image, $folder = '')
     {
-        if(empty($folder)){
-
-        } else {
-
-        }
-
         $file_type = mime_content_type($image);
         $delimiter = uniqid();
 
         $data = '--' . $delimiter . "\r\n";
-        $data .= 'Content-Type: application/json'. "\r\n\r\n";
+        $data .= 'Content-Type: application/json; charset=UTF-8' . "\r\n\r\n";
 
         $data .= json_encode([
                 "name" => basename($image),
-                "parents" => $folder
+                'parents' => [$folder]
             ]) . "\r\n";
 
-        $data = '--' . $delimiter . "\r\n";
+        $data .= '--' . $delimiter . "\r\n";
         $data .= 'Content-Type: ' . $file_type . "\r\n\r\n";
 
         $data .= file_get_contents($image) . "\r\n";
         $data .= '--' . $delimiter . "--\r\n";
-
 
         $client = new HttpClient();
 
@@ -41,6 +34,9 @@ class GoogleDrive extends GoogleOAuth
             ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', $data, false);
 
         $res = json_decode($res, true);
+
+        var_dump($res);
+        exit;
 
         if (!empty($res['id'])) {
 
