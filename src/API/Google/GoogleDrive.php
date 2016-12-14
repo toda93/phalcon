@@ -14,13 +14,11 @@ class GoogleDrive extends GoogleOAuth
 
         }
 
-
-
         $file_type = mime_content_type($image);
         $delimiter = uniqid();
 
         $data = '--' . $delimiter . "\r\n";
-        $data .= 'Content-Type: ' . $file_type . "\r\n\r\n";
+        $data .= 'Content-Type: application/json'. "\r\n\r\n";
 
         $data .= json_encode([
                 "title" => basename($image),
