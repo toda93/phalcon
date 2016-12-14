@@ -35,9 +35,6 @@ class GoogleDrive extends GoogleOAuth
 
         $res = json_decode($res, true);
 
-        var_dump($res);
-        exit;
-
         if (!empty($res['id'])) {
 
             $this->publicFile($res['id']);
