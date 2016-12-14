@@ -21,8 +21,7 @@ class GoogleDrive extends GoogleOAuth
         $data .= 'Content-Type: application/json'. "\r\n\r\n";
 
         $data .= json_encode([
-                "title" => basename($image),
-                "mimeType" => $file_type,
+                "name" => basename($image),
                 "parents" => $folder
             ]) . "\r\n";
 
@@ -37,9 +36,9 @@ class GoogleDrive extends GoogleOAuth
 
         $res = $client->init()
             ->addHeader("Authorization: Bearer " . $this->token['access_token'])
-            ->addHeader("Content-Type: " . 'multipart/form-data')
-            ->addHeader("Content-Type: multipart/form-data; boundary=$delimiter")
-            ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', $data, false);
+            ->addHeader("Content-Type: multipart/related; boundary=$delimiter")
+            ->addHeader("Content-Length: " . strlen($data))
+            ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', $data, false);
 
         $res = json_decode($res, true);
 
