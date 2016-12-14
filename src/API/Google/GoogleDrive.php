@@ -17,7 +17,7 @@ class GoogleDrive extends GoogleOAuth
 
 
         $file_type = mime_content_type($image);
-        $delimiter = '---------------------------' . uniqid();
+        $delimiter = uniqid();
 
         $data = '--' . $delimiter . "\r\n";
         $data .= 'Content-Type: ' . $file_type . "\r\n\r\n";
