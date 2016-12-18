@@ -82,7 +82,6 @@ class GoogleOAuth
         if (!array_key_exists('error', $token)) {
             $result['access_token'] = $token['access_token'];
             $result['token_type'] = $token['token_type'];
-            $result['auth_type'] = $token['auth_type'];
             $result['expired'] = (int)$token['expires_in'] + time();
 
             if (!empty($token['refresh_token'])) {

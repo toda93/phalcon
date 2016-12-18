@@ -38,7 +38,7 @@ class FacebookOAuth
 
     public function refreshToken()
     {
-        if ($this->token['expired'] <= time()) {
+        if (!empty($this->token['expired']) && $this->token['expired'] <= time()) {
 
             $client = new HttpClient();
 
@@ -72,7 +72,6 @@ class FacebookOAuth
         if (!array_key_exists('error', $token)) {
             $result['access_token'] = $token['access_token'];
             $result['token_type'] = $token['token_type'];
-            $result['auth_type'] = $token['auth_type'];
             $result['expired'] = (int)$token['expires_in'] + time();
 
             if (!empty($token['refresh_token'])) {

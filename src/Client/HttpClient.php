@@ -61,11 +61,15 @@ class HttpClient
             ->addOption(CURLOPT_COOKIEJAR, $path);
     }
 
+    public function setCookie($cookies)
+    {
+        return $this->addOption(CURLOPT_COOKIE, $cookies);
+    }
+
     public function responseHeader($body = false)
     {
         return $this->addOption(CURLOPT_NOBODY, !$body)
             ->addOption(CURLOPT_HEADER, true);
-
     }
 
     public function follow()
