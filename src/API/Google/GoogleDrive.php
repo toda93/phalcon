@@ -43,8 +43,49 @@ class GoogleDrive extends GoogleOAuth
         return '';
     }
 
+    public function getImagesOnFolder($folder = 'root', $sub = false)
+    {
+        $url = "https://www.googleapis.com/drive/v3/files?q=mimeType+contains+'image'+and+'$folder'+in+parents+and+trashed=false&pageSize=1000";
 
-    protected function publicFile($id)
+        $client = new HttpClient();
+
+        $result = [];
+
+        $page_token = '';
+
+        do {
+            $temp_url = $url;
+            if (!empty($page_token)) {
+                $temp_url .= '&pageToken=' . $page_token;
+            }
+
+            $res = $client->init()->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($temp_url);
+
+            $res = json_decode($res, true);
+
+            $result = empty($res['files']) ? $result : array_merge($result, $res['files']);
+
+            $page_token = empty($res['nextPageToken']) ? '' : $res['nextPageToken'];
+
+        } while (!empty($page_token));
+
+        if($sub){
+            $url = "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.folder'+and+'$folder'+in+parents+and+trashed=false&pageSize=1000";
+
+            $res = $client->init()->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($url);
+
+            $res = json_decode($res, true);
+
+            if(!empty($res['files'])){
+                foreach($res['files'] as $folder){
+                    $result = array_merge($result, $this->getImagesOnFolder($folder['id'], $sub));
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function publicFile($id)
     {
         $client = new HttpClient();
 
