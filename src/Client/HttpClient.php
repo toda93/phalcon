@@ -44,7 +44,10 @@ class HttpClient
 
     public function addOption($opt, $value)
     {
-        curl_setopt($this->ch, $opt, $value);
+
+        if(!is_null($value)){
+            curl_setopt($this->ch, $opt, $value);
+        }
         return $this;
     }
 
@@ -64,6 +67,10 @@ class HttpClient
     public function setCookie($cookies)
     {
         return $this->addOption(CURLOPT_COOKIE, $cookies);
+    }
+    public function setProxy($proxy)
+    {
+        return $this->addOption(CURLOPT_PROXY, $proxy);
     }
 
     public function responseHeader($body = false)

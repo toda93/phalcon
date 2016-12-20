@@ -13,7 +13,7 @@ class MemcachedManager
 
     public function remember($name, $time = 60, $callback = false, $use = true)
     {
-        $result = $use && !isDeveloper() ? $this->get($name) : null;
+        $result = $use && !is_developer() ? $this->get($name) : null;
 
         if (empty($result)) {
             if (is_callable($callback)) {

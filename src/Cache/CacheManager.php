@@ -23,7 +23,7 @@ class CacheManager
             } else {
                 $result = $callback;
             }
-            if($use && !isDeveloper()){
+            if($use && !is_developer()){
                 $this->set($name, $result, $time);
             }
         }
