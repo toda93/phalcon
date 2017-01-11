@@ -146,8 +146,7 @@ class Controller extends ControllerRoot
         }
         $client = new HttpClient();
 
-        $response = json_decode($client->init()
-            ->get("https://www.google.com/recaptcha/api/siteverify?secret=" . page('recaptcha_secret') . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
+        $response = json_decode($client->get("https://www.google.com/recaptcha/api/siteverify?secret=" . page('recaptcha_secret') . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
         );
 
         if (!$response->success) {

@@ -8,19 +8,26 @@ class GoogleOAuth
 {
     protected $scope = 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/urlshortener';
 
-
     protected $token = [];
 
     protected $config = [];
 
-    public function __construct($config, $token = [])
+    protected $client = null;
+
+    public function __construct($config, $token = [], $proxy = null)
     {
         $this->config = $config;
         $this->token = $token;
 
+        $this->client = new HttpClient([
+            'proxy' => $proxy
+        ]);
+
         if(!empty($this->token)){
             $this->refreshToken();
         }
+
+
     }
 
     public function getToken()
@@ -47,8 +54,7 @@ class GoogleOAuth
     {
         if ($this->token['expired'] <= time()) {
 
-            $client = new HttpClient();
-            $res = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
+            $res = $this->client->post('https://www.googleapis.com/oauth2/v4/token', [
                     'refresh_token' => $this->token['refresh_token'],
                     'client_id' => $this->config['client_id'],
                     'client_secret' => $this->config['client_secret'],
@@ -67,8 +73,7 @@ class GoogleOAuth
 
     public function getTokenByCode($code)
     {
-        $client = new HttpClient();
-        $res = $client->init()->post('https://www.googleapis.com/oauth2/v4/token', [
+        $res = $this->client->post('https://www.googleapis.com/oauth2/v4/token', [
             'code' => $code,
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],

@@ -12,28 +12,48 @@ class HttpClient
 {
     private $ch = null;
     private $header = [];
+    private $opt;
 
-    public function init($agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0')
+    public function __construct($opt = [])
     {
-        $this->ch = curl_init();
-        $this->addOption(CURLOPT_SSL_VERIFYHOST, false)
-            ->addOption(CURLOPT_SSL_VERIFYPEER, false)
-            ->addOption(CURLOPT_RETURNTRANSFER, true)
-            ->addOption(CURLOPT_USERAGENT, $agent);
+        $opt = array_merge([
+            'verify_host' => false,
+            'verify_peer' => false,
+            'return_transfer' => true,
+            'agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0',
+            'proxy' => null
+        ], $opt);
 
-        return $this;
+        $this->ch = curl_init();
+
+        $this->opt = $opt;
     }
 
-    private function execute()
+    public function __destruct()
     {
-        if (!empty($this->header)) {
-            $this->addOption(CURLOPT_HTTPHEADER, $this->header);
-        }
-        $result = curl_exec($this->ch);
-
-        $this->header = [];
         curl_close($this->ch);
-        return $result;
+    }
+
+    protected function init()
+    {
+        $this->addOption(CURLOPT_SSL_VERIFYHOST, $this->opt['verify_host'])
+            ->addOption(CURLOPT_SSL_VERIFYPEER, $this->opt['verify_peer'])
+            ->addOption(CURLOPT_RETURNTRANSFER, $this->opt['return_transfer'])
+            ->addOption(CURLOPT_USERAGENT, $this->opt['agent'])
+            ->addOption(CURLOPT_PROXY, $this->opt['proxy']);
+
+        if (!empty($this->opt['cookie'])) {
+            $this->addOption(CURLOPT_COOKIE, $this->opt['cookies']);
+        }
+        if (isset($this->opt['cookie_file'])) {
+            if (empty($this->opt['cookie_file'])) {
+                $this->opt['cookie_file'] = __DIR__ . '/cookies.txt';
+                file_put_contents($this->opt['cookie_file'], '');
+            }
+
+            $this->addOption(CURLOPT_COOKIEFILE, $this->opt['cookie_file'])
+                ->addOption(CURLOPT_COOKIEJAR, $this->opt['cookie_file']);
+        }
     }
 
     public function addHeader($header)
@@ -51,27 +71,6 @@ class HttpClient
         return $this;
     }
 
-    public function useCookie($path = false, $keep = true)
-    {
-        if (empty($path)) {
-            $path = __DIR__ . '/cookies.txt';
-        }
-        if (!$keep) {
-            file_put_contents($path, '');
-        }
-
-        return $this->addOption(CURLOPT_COOKIEFILE, $path)
-            ->addOption(CURLOPT_COOKIEJAR, $path);
-    }
-
-    public function setCookie($cookies)
-    {
-        return $this->addOption(CURLOPT_COOKIE, $cookies);
-    }
-    public function setProxy($proxy)
-    {
-        return $this->addOption(CURLOPT_PROXY, $proxy);
-    }
 
     public function responseHeader($body = false)
     {
@@ -82,6 +81,21 @@ class HttpClient
     public function follow()
     {
         return $this->addOption(CURLOPT_FOLLOWLOCATION, true);
+    }
+
+
+    private function execute()
+    {
+        $this->init();
+
+        if (!empty($this->header)) {
+            $this->addOption(CURLOPT_HTTPHEADER, $this->header);
+        }
+        $result = curl_exec($this->ch);
+
+        curl_reset($this->ch);
+
+        return $result;
     }
 
     public function get($url)
