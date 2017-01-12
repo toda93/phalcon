@@ -9,7 +9,8 @@ class Model extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-
+//        $this->setReadConnectionService('db');
+//        $this->setWriteConnectionService('db');
     }
     public function setConnection($name)
     {
