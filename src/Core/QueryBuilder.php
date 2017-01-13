@@ -24,7 +24,7 @@ class QueryBuilder extends \Phalcon\Mvc\Model\Query\Builder
 
     public function where($column, $operator = null, $value = null)
     {
-        if (empty($value)) {
+        if (is_null($value)) {
             $value = $operator;
             $operator = '=';
         }
@@ -88,7 +88,7 @@ class QueryBuilder extends \Phalcon\Mvc\Model\Query\Builder
 
     public function andWhere($column, $operator = null, $value = null)
     {
-        if (empty($value)) {
+        if (is_null($value)) {
             $value = $operator;
             $operator = '=';
         }
@@ -152,7 +152,7 @@ class QueryBuilder extends \Phalcon\Mvc\Model\Query\Builder
 
     public function orWhere($column, $operator = null, $value = null)
     {
-        if (empty($value)) {
+        if (is_null($value)) {
             $value = $operator;
             $operator = '=';
         }
