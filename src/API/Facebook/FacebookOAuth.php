@@ -12,10 +12,16 @@ class FacebookOAuth
 
     protected $config = [];
 
-    public function __construct($config, $token = [])
+    protected $client = null;
+
+    public function __construct($config, $token = [], $proxy = null)
     {
         $this->config = $config;
         $this->token = $token;
+
+        $this->client = new HttpClient([
+            'proxy' => $proxy
+        ]);
     }
 
     public function getToken()
@@ -40,9 +46,7 @@ class FacebookOAuth
     {
         if (!empty($this->token['expired']) && $this->token['expired'] <= time()) {
 
-            $client = new HttpClient();
-
-            $res = $client->init()->get('https://graph.facebook.com/oauth/access_token?' . http_build_query([
+            $res = $this->client->get('https://graph.facebook.com/oauth/access_token?' . http_build_query([
                     'grant_type' => 'fb_exchange_token',
                     'client_id' => $this->config['client_id'],
                     'client_secret' => $this->config['client_secret'],
@@ -58,8 +62,7 @@ class FacebookOAuth
 
     public function getTokenByCode($code)
     {
-        $client = new HttpClient();
-        $res = $client->init()->post('https://graph.facebook.com/v2.7/oauth/access_token', [
+        $res = $this->client->post('https://graph.facebook.com/v2.7/oauth/access_token', [
             'code' => $code,
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],

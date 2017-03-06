@@ -2,8 +2,6 @@
 
 namespace Toda\API\Google;
 
-use Toda\Client\HttpClient;
-
 class GoogleDrive extends GoogleOAuth
 {
     public function uploadImage($image, $folder = '')
@@ -25,10 +23,9 @@ class GoogleDrive extends GoogleOAuth
         $data .= file_get_contents($image) . "\r\n";
         $data .= '--' . $delimiter . "--\r\n";
 
-        $client = new HttpClient();
 
-        $res = $client->init()
-            ->addHeader("Authorization: Bearer " . $this->token['access_token'])
+
+        $res = $this->client->addHeader("Authorization: Bearer " . $this->token['access_token'])
             ->addHeader("Content-Type: multipart/related; boundary=$delimiter")
             ->addHeader("Content-Length: " . strlen($data))
             ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', $data, false);
@@ -47,8 +44,6 @@ class GoogleDrive extends GoogleOAuth
     {
         $url = "https://www.googleapis.com/drive/v3/files?q=mimeType+contains+'image'+and+'$folder'+in+parents+and+trashed=false&pageSize=1000";
 
-        $client = new HttpClient();
-
         $result = [];
 
         $page_token = '';
@@ -59,7 +54,7 @@ class GoogleDrive extends GoogleOAuth
                 $temp_url .= '&pageToken=' . $page_token;
             }
 
-            $res = $client->init()->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($temp_url);
+            $res = $this->client->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($temp_url);
 
             $res = json_decode($res, true);
 
@@ -72,7 +67,7 @@ class GoogleDrive extends GoogleOAuth
         if($sub){
             $url = "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.folder'+and+'$folder'+in+parents+and+trashed=false&pageSize=1000";
 
-            $res = $client->init()->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($url);
+            $res = $this->client->addHeader("Authorization: Bearer " . $this->token['access_token'])->get($url);
 
             $res = json_decode($res, true);
 
@@ -87,10 +82,7 @@ class GoogleDrive extends GoogleOAuth
 
     public function publicFile($id)
     {
-        $client = new HttpClient();
-
-        $client->init()
-            ->addHeader("Authorization: Bearer " . $this->token['access_token'])
+        $this->client->addHeader("Authorization: Bearer " . $this->token['access_token'])
             ->addHeader("Content-Type: application/json")
             ->post("https://www.googleapis.com/drive/v3/files/{$id}/permissions", json_encode(["role" => "reader", "type" => "anyone"]), false);
     }

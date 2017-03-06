@@ -5,12 +5,14 @@ namespace Toda\Core;
 
 class Model extends \Phalcon\Mvc\Model
 {
-    protected $track = false;
+    protected $track_time = false;
+    protected $track_user = false;
 
     public function initialize()
     {
 
     }
+
     public function setConnection($name)
     {
         $this->setConnectionService($name);
@@ -25,24 +27,43 @@ class Model extends \Phalcon\Mvc\Model
         return call_user_func_array([$builder, $method], $parameters);
     }
 
-    public function disableTrack(){
-        $this->track = false;
+    public function disableTrackTime()
+    {
+        $this->track_time = false;
+        return $this;
+    }
+
+    public function disableTrackUser()
+    {
+        $this->track_user = false;
         return $this;
     }
 
     public function beforeCreate()
     {
-        if ($this->track) {
+        if ($this->track_time) {
             $this->created_at = $this->updated_at = time();
-            $this->created_id = $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+        }
+        if ($this->track_user) {
+            if (empty($this->getDI()->getSession()->get('auth'))) {
+                $this->created_id = $this->updated_id = 1;
+            } else {
+                $this->created_id = $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+            }
         }
     }
 
     public function beforeUpdate()
     {
-        if ($this->track) {
-            $this->updated_at = time();
-            $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+        if ($this->track_time) {
+            $this->created_at = $this->updated_at = time();
+        }
+        if ($this->track_user) {
+            if (empty($this->getDI()->getSession()->get('auth'))) {
+                $this->updated_id = 1;
+            } else {
+                $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+            }
         }
     }
 }

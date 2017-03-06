@@ -2,7 +2,6 @@
 
 namespace Toda\API\Facebook;
 
-use Toda\Client\HttpClient;
 
 class FacebookGraph extends FacebookOAuth
 {
@@ -10,7 +9,7 @@ class FacebookGraph extends FacebookOAuth
 
     protected $fanpage_token = null;
 
-    public function __construct($config, $token = [])
+    public function __construct($config, $token = [], $proxy = null)
     {
         parent::__construct($config, $token);
 
@@ -24,9 +23,7 @@ class FacebookGraph extends FacebookOAuth
 
     public function getMyInfo()
     {
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . 'me/accounts?access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . 'me/accounts?access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -37,9 +34,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $post_id = $this->trimPostId($post_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $post_id . '?fields=from&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $post_id . '?fields=from&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -50,9 +45,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $post_id = $this->trimPostId($post_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $post_id . '?fields=full_picture&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $post_id . '?fields=full_picture&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -67,9 +60,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $post_id = $this->trimPostId($post_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $post_id . '?fields=shares,comments.limit(0).summary(1),reactions.limit(0).summary(1)&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $post_id . '?fields=shares,comments.limit(0).summary(1),reactions.limit(0).summary(1)&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -89,9 +80,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $post_id = $this->trimPostId($post_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $post_id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $post_id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -105,9 +94,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $post_id = $this->trimPostId($post_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $post_id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $post_id . '/comments?fields=from,message&limit=5000' . '&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -118,7 +105,7 @@ class FacebookGraph extends FacebookOAuth
         $result = $res['data'];
 
         while (!empty($res['paging']['next'])) {
-            $res = $client->init()->get($res['paging']['next']);
+            $res = $this->client->get($res['paging']['next']);
             $res = json_decode($res, true);
 
             $result = array_merge($res['data'], $result);
@@ -130,9 +117,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->post($this->graph_endpoint . $comment_id . '/comments?access_token=' . $this->getPageToken($fanpage_id), [
+        $res = $this->client->post($this->graph_endpoint . $comment_id . '/comments?access_token=' . $this->getPageToken($fanpage_id), [
             'message' => $message
         ]);
 
@@ -151,10 +136,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $user_id . '?access_token=' . $this->getPageToken($fanpage_id));
-
+        $res = $this->client->get($this->graph_endpoint . $user_id . '?access_token=' . $this->getPageToken($fanpage_id));
 
         $res = json_decode($res, true);
 
@@ -169,9 +151,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $fanpage_id . '/posts?fields=link,description,created_time,full_picture,status_type,message,type,source&since=' . $since . '&limit=100&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $fanpage_id . '/posts?fields=link,description,created_time,full_picture,status_type,message,type,source&since=' . $since . '&limit=100&access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -182,7 +162,7 @@ class FacebookGraph extends FacebookOAuth
         $result = $res['data'];
 
         while (!empty($res['paging']['next'])) {
-            $res = $client->init()->get($res['paging']['next']);
+            $res =$this->client->get($res['paging']['next']);
             $res = json_decode($res, true);
 
             $result = array_merge($result, $res['data']);
@@ -196,9 +176,8 @@ class FacebookGraph extends FacebookOAuth
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
         if (empty($this->fanpage_token)) {
-            $client = new HttpClient();
 
-            $res = $client->init()->get($this->graph_endpoint . $fanpage_id . '?fields=access_token&access_token=' . $this->token['access_token']);
+            $res = $this->client->get($this->graph_endpoint . $fanpage_id . '?fields=access_token&access_token=' . $this->token['access_token']);
 
             $res = json_decode($res, true);
 
@@ -213,9 +192,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $fanpage_id . '?fields=about,fan_count,link,name,picture{url},cover,category,description_html&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $fanpage_id . '?fields=about,fan_count,link,name,picture{url},cover,category,description_html&access_token=' . $this->token['access_token']);
 
         return json_decode($res, true);
     }
@@ -231,9 +208,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $fanpage_id . '/picture?redirect=false&height=350&width=350&access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $fanpage_id . '/picture?redirect=false&height=350&width=350&access_token=' . $this->token['access_token']);
 
         return json_decode($res, true);
 
@@ -243,9 +218,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->get($this->graph_endpoint . $video_id . '?fields=source&access_token=' . $this->getPageToken($fanpage_id));
+        $res = $this->client->get($this->graph_endpoint . $video_id . '?fields=source&access_token=' . $this->getPageToken($fanpage_id));
 
         $res = json_decode($res, true);
 
@@ -259,9 +232,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->post($this->graph_endpoint . $fanpage_id . '/picture?access_token=' . $this->getPageToken($fanpage_id), [
+        $res = $this->client->post($this->graph_endpoint . $fanpage_id . '/picture?access_token=' . $this->getPageToken($fanpage_id), [
             'picture' => $url
         ]);
 
@@ -277,9 +248,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->post($this->graph_endpoint . $fanpage_id . '/photos?access_token=' . $this->getPageToken($fanpage_id), $fields);
+        $res = $this->client->post($this->graph_endpoint . $fanpage_id . '/photos?access_token=' . $this->getPageToken($fanpage_id), $fields);
 
         $res = json_decode($res, true);
 
@@ -293,15 +262,13 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
         $photo_id = $this->uploadPagePhoto($fanpage_id, [
             'url' => $url
         ]);
 
         if (!empty($photo_id)) {
 
-            $res = $client->init()->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), [
+            $res = $this->client->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), [
                 'cover' => $photo_id
             ]);
 
@@ -318,9 +285,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), $fields);
+        $res = $this->client->post($this->graph_endpoint . $fanpage_id . '?access_token=' . $this->getPageToken($fanpage_id), $fields);
 
         $res = json_decode($res, true);
 
@@ -335,9 +300,7 @@ class FacebookGraph extends FacebookOAuth
     {
         $fanpage_id = $this->trimFacebookId($fanpage_id);
 
-        $client = new HttpClient();
-
-        $res = $client->init()->post($this->graph_endpoint . $fanpage_id . '/feed?access_token=' . $this->getPageToken($fanpage_id), $fields);
+        $res = $this->client->post($this->graph_endpoint . $fanpage_id . '/feed?access_token=' . $this->getPageToken($fanpage_id), $fields);
 
         $res = json_decode($res, true);
 

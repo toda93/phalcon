@@ -17,6 +17,11 @@ class QueryBuilder extends \Phalcon\Mvc\Model\Query\Builder
         return $this->columns($select);
     }
 
+    public function whereRaw($query)
+    {
+        return parent::where($query);
+    }
+
     public function where($column, $operator = null, $value = null)
     {
         if (empty($value)) {

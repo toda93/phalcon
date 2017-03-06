@@ -14,17 +14,15 @@ class Controller extends ControllerRoot
 
     public function initialize()
     {
-        if (!$this->run_background) {
-            $this->checkCSRF();
+        $this->checkCSRF();
 
-            if ($this->session->has('old')) {
-                $this->old = new OldValue($this->session->get('old'));
-                $this->session->remove('old');
-            }
-            $this->view->setVars([
-                'old' => $this->old
-            ]);
+        if ($this->session->has('old')) {
+            $this->old = new OldValue($this->session->get('old'));
+            $this->session->remove('old');
         }
+        $this->view->setVars([
+            'old' => $this->old
+        ]);
 
         $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
 
@@ -53,19 +51,15 @@ class Controller extends ControllerRoot
         if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
 
 
-            if($this->request->isAjax()){
-                $token = $this->request-> getHeader('X-CSRF-TOKEN');
+            if ($this->request->isAjax()) {
+                $token = $this->request->getHeader('X-CSRF-TOKEN');
             } else {
                 $token = $this->request->get('_csrf');
             }
 
             if ($token != $this->session->get('token')) {
 
-                return $this->dispatcher->forward([
-                    'controller' => 'error',
-                    'action' => 'show403',
-                    'params' => ['message' => 'CSRF token not mismatch'],
-                ]);
+                return $this->abort(403, 'Token not mismatch');
             }
         }
     }
@@ -117,6 +111,8 @@ class Controller extends ControllerRoot
 
                 $message = Validate::$method($key, $arr_check[$key], $param);
 
+
+
                 if (!empty($message)) {
 
                     $valid = false;
@@ -146,8 +142,7 @@ class Controller extends ControllerRoot
         }
         $client = new HttpClient();
 
-        $response = json_decode($client->init()
-            ->get("https://www.google.com/recaptcha/api/siteverify?secret=" . page('recaptcha_secret') . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
+        $response = json_decode($client->get("https://www.google.com/recaptcha/api/siteverify?secret=" . page('recaptcha_secret') . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
         );
 
         if (!$response->success) {
@@ -165,7 +160,16 @@ class Controller extends ControllerRoot
     protected function emptyTo404($data)
     {
         if (empty($data) || count($data) == 0 || count($data->items) == 0) {
-            abort(404);
+            $this->abort(404);
         }
+    }
+
+    protected function abort($code, $message = '')
+    {
+        return $this->dispatcher->forward([
+            'controller' => 'error',
+            'action' => 'show' . $code,
+            'params' => ['message' => $message],
+        ]);
     }
 }

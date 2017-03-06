@@ -1,40 +1,16 @@
-* Hostname www.teezily.com was found in DNS cache
-*   Trying 195.154.166.16...
-* Connected to www.teezily.com (195.154.166.16) port 443 (#0)
-* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
-* successfully set certificate verify locations:
-*   CAfile: /usr/local/etc/openssl/cert.pem
-  CApath: none
-* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
-* Server certificate:
-* 	 subject: C=FR; ST=Paris; L=Paris; O=Teezily; CN=www.teezily.com
-* 	 start date: 2015-05-29 00:00:00 GMT
-* 	 expire date: 2018-05-29 23:59:59 GMT
-* 	 issuer: C=US; O=Symantec Corporation; OU=Symantec Trust Network; CN=Symantec Class 3 Secure Server CA - G4
-* 	 SSL certificate verify ok.
-> PUT /campaigns/C-2PH9H?format=json HTTP/1.1
-Host: www.teezily.com
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0
-Accept: */*
-Cookie: _teezr_session=BAh7C0kiC2xvY2FsZQY6BkVGOgdlbkkiD3Nlc3Npb25faWQGOwBUSSIlODQ1YzQ2ZmZmZTBhMWRmZjlmYWVlZWFkNmE2MGQ1MTkGOwBUSSIaY2FtcGFpZ25fcmVjZW50X3ZpZXdzBjsARlsASSINY3VycmVuY3kGOwBGSSIIZXVyBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpA%2FtJBEkiIiQyYSQxMCQyOUFLWW5hQ0VycWdpdzIvSkZyUUtlBjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMVFOWjM4dzRlSzd0VXp6aGx3cmRNVmFlcFhFWStMSlhIMFI5cEF6eTdxNk09BjsARg%3D%3D--9612a84ca1bafb4ef6211bab06b8ddb0a6c5c41f; remember_user_token=BAhbB1sGaQP7SQRJIiIkMmEkMTAkMjlBS1luYUNFcnFnaXcyL0pGclFLZQY6BkVU--4c5d345821158b9546a89dedcb3a5bf86f5aadda
-Referer: https://www.teezily.com/campaigns/C-2PH9H/edit
-Content-Type: application/json;charset=utf-8
-Content-Length: 833311
-X-Requested-With: XMLHttpRequest
-X-CSRF-Token: QNZ38w4eK7tUzzhlwrdMVaepXEY+LJXH0R9pAzy7q6M=
-Expect: 100-continue
+* Rebuilt URL to: https://m.facebook.com/
+*   Trying 122.152.160.68...
+* TCP_NODELAY set
+* Connected to 122.152.160.68 (122.152.160.68) port 3128 (#0)
+* Establish HTTP proxy tunnel to m.facebook.com:443
+> CONNECT m.facebook.com:443 HTTP/1.1
+Host: m.facebook.com:443
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0b9pre) Gecko/20101228 Firefox/4.0b9pre
+Proxy-Connection: Keep-Alive
 
-< HTTP/1.1 100 Continue
-* We are completely uploaded and fine
-< HTTP/1.1 500 Internal Server Error
-< Server: nginx/1.2.1
-< Date: Mon, 14 Nov 2016 21:56:31 GMT
-< Content-Type: text/html; charset=utf-8
-< Transfer-Encoding: chunked
-< Connection: keep-alive
-< Status: 500 Internal Server Error
-< X-Request-Id: 2a3f302ee09a84c9247b3110a5aca403
-< X-Runtime: 0.720851
-< X-Rack-Cache: invalidate, pass
+< HTTP/1.1 200 Connection established
 < 
-* Connection #0 to host www.teezily.com left intact
+* Proxy replied OK to CONNECT request
+* Operation timed out after 5000 milliseconds with 0 out of 0 bytes received
+* Curl_http_done: called premature == 1
+* Closing connection 0
