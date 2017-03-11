@@ -13,7 +13,6 @@ class Extension
             return $name . '('. $arguments . ')';
         } else {
             if($name == 'pagination'){
-
                 return '\Toda\Html\Pagination::render('. $arguments . ')';
             }
             if($name == 'form_begin'){
