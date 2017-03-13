@@ -29,10 +29,10 @@ class QueryBuilder
 
     public function where($column, $operator = null, $value = null)
     {
-        if (empty($operator)) {
+        if (is_null($operator)) {
             $this->builder->where($column);
         } else {
-            if (empty($value)) {
+            if (is_null($value)) {
                 $value = $operator;
                 $operator = '=';
             }
@@ -106,10 +106,10 @@ class QueryBuilder
     public function andWhere($column, $operator = null, $value = null)
     {
 
-        if (empty($operator)) {
+        if (is_null($operator)) {
             $this->builder->where($column);
         } else {
-            if (empty($value)) {
+            if (is_null($value)) {
                 $value = $operator;
                 $operator = '=';
             }
@@ -182,10 +182,10 @@ class QueryBuilder
 
     public function orWhere($column, $operator = null, $value = null)
     {
-        if (empty($operator)) {
+        if (is_null($operator)) {
             $this->builder->orWhere($column);
         } else {
-            if (empty($value)) {
+            if (is_null($value)) {
                 $value = $operator;
                 $operator = '=';
             }
