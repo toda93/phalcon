@@ -16,9 +16,6 @@ class FacebookScraper
     public function __construct($opt = [])
     {
         $this->opt = $opt;
-        if (!isset($this->opt['cookie_file'])) {
-            $this->opt['cookie_file'] = '';
-        }
         $this->client = new HttpClient($this->opt);
     }
 
@@ -40,16 +37,7 @@ class FacebookScraper
 
     public function setAuthCookie($cookie)
     {
-        $this->cookie = $cookie;
-
-        if (!empty($cookie)) {
-            if (preg_match('/\.txt/', $cookie)) {
-                $this->opt['cookie_file'] = $cookie;
-            } else {
-                $this->opt['cookie'] = $cookie;
-                unset($this->opt['cookie_file']);
-            }
-        }
+        $this->opt['cookie'] = $cookie;
 
         $this->client = new HttpClient($this->opt);
         return $this;
@@ -61,169 +49,188 @@ class FacebookScraper
 
         $config['helper'] = '';
 
-        $config = http_build_query($config);
+        $query = http_build_query($config);
 
         preg_match_all('/<input type=\"hidden\" name=\"(lsd|ccp|reg_instance|submission_request|helper|field_names\[\])\" value=\"(.*?)\"/', $res, $matches);
 
         foreach ($matches[1] as $key => $match) {
-            $config .= '&' . urlencode($match) . '=' . urlencode($matches[2][$key]);
+            $query .= '&' . urlencode($match) . '=' . urlencode($matches[2][$key]);
         }
 
         $res = $this->client->responseHeader()
+            ->timeout(10)
             ->addHeader('Referer: https://m.facebook.com/reg?locale=en_US')
             ->addHeader('Content-Type: application/x-www-form-urlencoded')
-            ->post('https://m.facebook.com/reg?locale=en_US', $config, false);
+            ->post('https://m.facebook.com/reg?locale=en_US', $query, false);
 
-        preg_match_all('/^Set-Cookie:\s*((c_user|xs)[^;]*)/mi', $res, $matches);
-        return implode('; ', $matches[1]);
+        $result['status'] = -1;
+
+        if (empty($res)) {
+            $result['message'] = 'proxy failed';
+        } else {
+            preg_match_all('/^Set-Cookie:\s*((c_user|xs)[^;]*)/mi', $res, $matches);
+            $cookie = implode('; ', $matches[1]);
+
+            if (preg_match('/Please enter the text below/i', $res)) {
+                $result['message'] = 'captcha';
+            } else if (preg_match('/The page you requested cannot be displayed right now/', $res)) {
+                $result['message'] = 'content not display';
+            } else if (preg_match('/To personalize content, tailor and measure ads, and provide a safer experience, we use cookies/i', $res)) {
+                $result['message'] = 'proxy no cookie';
+            } else if (preg_match('/HTTP\/1\.1 403 Forbidden/i', $res)) {
+                $result['message'] = 'proxy forbidden';
+            } else if (preg_match('/We need to confirm your identity before you can log in/i', $res)) {
+                $result['message'] = 'proxy not trusted';
+            } else if (preg_match('/We require everyone to use the name they use in everyday life|Using your real name makes it easier for friends to recognize you/i', $res)) {
+                $result['status'] = 2;
+            } else if (preg_match('/Please use an email address or mobile number that is not already in use by a registered account/i', $res)) {
+                echo 'Phone used: ' . $config['reg_email__'];
+            } else if (preg_match('/c_user=(\d+);/', $cookie, $matches)) {
+
+                $data = $this->changeToEmail($cookie);
+
+                $result['step'] = $data['step'];
+                if ($data['status'] == 1) {
+                    $result['email'] = $data['email'];
+                    $result['status'] = 1;
+                    $result['cookie'] = $cookie;
+                    $result['uid'] = $matches[1];
+
+                } else {
+                    $result['status'] = -1;
+                    $result['message'] = 'proxy not trusted';
+
+                    if (!empty($data['email'])) {
+                        unlink(RESOURCE_PATH . "cookie/" . $data['email'] . ".txt");
+                    }
+                }
+
+
+            } else {
+
+                echo 'Unkown' . PHP_EOL;
+                $result['message'] = 'Unkown';
+                echo $res;
+                echo PHP_EOL;
+            }
+        }
+
+        return $result;
     }
 
-    public function checkCreated()
+    protected function changeToEmail($cookie)
     {
-        $res = $this->client->follow()->get('https://m.facebook.com/');
+        $res = $this->setAuthCookie($cookie)->client->follow()->get('https://m.facebook.com/changeemail');
 
-        if (preg_match('/Your account has been disabled|Please verify your account/', $res)) {
-            return -1;
-        } else if (preg_match('/Add your mobile number to get updates|Please enter your phone number|Confirm your number/', $res)) {
-            return 1;
-        } else if (preg_match('/Confirm your email address/', $res)) {
-            return 4;
+        $status = 0;
+        $step = 1;
+        $email = '';
+        if (preg_match('/Add email address/i', $res)) {
+
+            $email = $this->randomEmail();
+
+            preg_match_all('/<input type=\"hidden\" name=\"(next|fb_dtsg|reg_instance|old_email)\" value=\"(.*?)\"/', $res, $matches);
+
+            $query = 'submit=Add&new=' . $email;
+
+            foreach ($matches[1] as $key => $match) {
+                $query .= '&' . urlencode($match) . '=' . urlencode($matches[2][$key]);
+            }
+
+            $res = $this->client->responseHeader()
+                ->timeout(30)
+                ->addHeader('Referer: https://m.facebook.com/changeemail')
+                ->addHeader('Content-Type: application/x-www-form-urlencoded')
+                ->post('https://m.facebook.com/setemail', $query, false);
+
+            if (preg_match('/Enter confirmation code/', $res)) {
+                $link = '';
+                $count = 0;
+                while (empty($link) && $count < 5) {
+                    sleep(10);
+                    $link = $this->getVerifyLink($email);
+                    $count++;
+                }
+
+                echo $link . PHP_EOL;
+
+
+                if (!empty($link)) {
+
+                    $res = $this->client->follow()->responseHeader()
+                        ->get($link);
+
+                    $status = 1;
+
+                    echo $res;
+
+                }
+            }
+
         }
-        return 3;
+        if (preg_match('/Confirm Your Number/i', $res)) {
+            $step = -2;
+        }
+        if (preg_match('/We need to confirm your identity before you can log in/i', $res)) {
+            $step = -1;
+        }
+        return [
+            'status' => $status,
+            'step' => $step,
+            'email' => $email
+        ];
     }
 
-    public function verifyEmail($link)
+    protected function randomEmail($count = 1)
     {
-        $res = $this->client->follow()->get(htmlspecialchars_decode($link));
+        $rand = uniqid();
 
-        if (preg_match('/Invalid confirmation code/', $res)) {
+        $client = new \Toda\Client\HttpClient([
+            'cookie_file' => RESOURCE_PATH . "cookie/$rand.txt",
+            'verify_host' => 2,
+        ]);
 
-            preg_match('/<input type=\"hidden\" name=\"fb_dtsg\" value=\"(.*?)\"/', $res, $matches);
+        $res = $client->get('https://temp-mail.org/');
 
-            $this->client->post('https:/m.facebook.com/confirmemail.php?resend&amp;didnt_get_code=1', [
-                'fb_dtsg' => $matches[1]
-            ]);
+        unset($client);
 
-            return false;
+        if (preg_match('/class=\"mail opentip\" value=\"(.*?)\" data-placement=\"bottom\"/', $res, $matches)) {
+            $email = $matches[1];
         }
 
-        $res = $this->client->follow()->get('https://m.facebook.com/settings/email/');
-
-        if (preg_match('/Pending Email/', $res)) {
-            return false;
+        if (!empty($email) && file_exists(RESOURCE_PATH . "cookie/$rand.txt")) {
+            rename(RESOURCE_PATH . "cookie/$rand.txt", RESOURCE_PATH . "cookie/$email.txt");
+            return $email;
         }
 
-        return true;
+        if (file_exists(RESOURCE_PATH . "cookie/$rand.txt")) {
+            unlink(RESOURCE_PATH . "cookie/$rand.txt");
+        }
+
+        if ($count < 5) {
+            return $this->randomEmail($count++);
+        } else {
+            return '';
+        }
     }
 
-//    public function checkAccount()
-//    {
-//
-//        $response = $client->init()
-//            ->useCookie()
-//            ->responseHeader()
-//            ->post('https://www.facebook.com/login.php?locale=en_US', [
-//                'email' => $this->username,
-//                'pass' => $this->password
-//            ]);
-//
-//        if (preg_match('/HTTP\/1\.1 302 Found/', $response)) {
-//
-//            $response = $client->init()
-//                ->useCookie()
-//                ->responseHeader()
-//                ->get('https://www.facebook.com/me');
-//
-//            if (preg_match('/Location: (.*)/', $response, $matches)) {
-//                if ($matches[1] == 'https://www.facebook.com/ ') {
-//                    return false;
-//                } else if (preg_match('/id=(\d+)/', $matches[1], $matches2)) {
-//                    return $matches2[1];
-//                } else {
-//                    return str_replace('https://www.facebook.com/', '', $matches[1]);
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
-//    public function tryAccount()
-//    {
-//        $client = new HttpClient();
-//
-//        $response = $client->init()
-//            ->useCookie($this->cookies)
-//            ->responseHeader()
-//            ->get('https://www.facebook.com/login.php?locale=en_US');
-//
-//        if (!preg_match('/HTTP\/1\.1 302 Found/', $response)) {
-//            $response = $client->init()
-//                ->useCookie($this->cookies)
-//                ->responseHeader()
-//                ->post('https://www.facebook.com/login.php?locale=en_US', [
-//                    'email' => $this->username,
-//                    'pass' => $this->password
-//                ]);
-//
-//            if (!preg_match('/Location: (.*)/', $response, $matches) && !preg_match('/checkpoint/', $matches[1])) {
-//                return false;
-//            }
-//
-//        }
-//        return true;
-//    }
-//
-//    public function addTester($app_id, $id)
-//    {
-//        if ($this->tryAccount()) {
-//            $url = "https://developers.facebook.com/apps/{$app_id}/async/roles/add/?dpr=1";
-//
-//            $client = new HttpClient();
-//
-//            $html = $client->init()->useCookie($this->cookies)->get('https://m.facebook.com/pages/create');
-//
-//            if (preg_match("/name=\"fb_dtsg\" value=\"(.*?)\"/", $html, $matches)) {
-//
-//                $client->init()->useCookie($this->config['cookies'])->responseHeader()->post($url, [
-//                    'fb_dtsg' => $matches[1],
-//                    'role' => 'testers',
-//                    'user_id_or_vanitys[0]' => $id,
-//                    '__user' => $this->config['facebook_id']
-//                ]);
-//                return [
-//                    'status' => 0,
-//                    'message' => 'Success'
-//                ];
-//            }
-//        };
-//        return [
-//            'status' => 0,
-//            'message' => 'Login Failed'
-//        ];
-//    }
-//
-//    public function findUser($str)
-//    {
-//        if ($this->tryAccount()) {
-//            $client = new HttpClient();
-//
-//            $html = $client->init()
-//                ->useCookie($this->cookies)
-//                ->get("https://m.facebook.com/search/people/?q=$str");
-//
-//            echo $html; exit;
-//
-//
-//
-//            return [
-//                'status' => 1,
-//                'message' => 'Success',
-//                'data' => ''
-//            ];
-//        }
-//        return [
-//            'status' => 0,
-//            'message' => 'Login Failed'
-//        ];
-//    }
+    protected function getVerifyLink($email)
+    {
+        $client = new \Toda\Client\HttpClient([
+            'cookie_file' => RESOURCE_PATH . "cookie/$email.com.txt",
+            'verify_host' => 2,
+        ]);
+
+        $res = $client->get('https://temp-mail.org/');
+
+        if (preg_match('/<a href=\"(.*?)\" title=\"(.*?)Facebook(.*?)\">/', $res, $matches)) {
+            $res = $client->get($matches[1]);
+
+            if (preg_match('/<a href=\"(https:\/\/www.facebook.com\/n\/\?confirmemail\.php(.*?)|https:\/\/www\.facebook\.com\/confirmcontact\.php(.*?))\"/', $res, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        return '';
+    }
 }

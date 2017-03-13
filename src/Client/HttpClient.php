@@ -134,20 +134,15 @@ class HttpClient
 
         if (!empty($this->opt['cookie'])) {
             $this->addOption(CURLOPT_COOKIE, $this->opt['cookie']);
-        }
-
-        if (isset($this->opt['cookie_file'])) {
+        } else {
             if (empty($this->opt['cookie_file'])) {
                 $this->opt['cookie_file'] = __DIR__ . '/cookie.txt';
                 file_put_contents($this->opt['cookie_file'], '');
             }
 
-
             $this->addOption(CURLOPT_COOKIEFILE, $this->opt['cookie_file'])
                 ->addOption(CURLOPT_COOKIEJAR, $this->opt['cookie_file']);
         }
-
-
     }
 
     public function getAgent(){
