@@ -292,7 +292,7 @@ class QueryBuilder
     }
 
 
-    public function limit($take, $skip)
+    public function limit($take, $skip = 0)
     {
         return $this->take($take)->skip($skip);
     }
