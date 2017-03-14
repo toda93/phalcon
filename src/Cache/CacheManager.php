@@ -31,6 +31,8 @@ class CacheManager
     }
 
     public function clear($name){
+        $name = $this->getDirectory($name) . '/' . $name;
+
         $this->cache->delete($name);
     }
 
