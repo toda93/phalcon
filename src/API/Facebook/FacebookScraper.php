@@ -81,12 +81,11 @@ class FacebookScraper
                 $result['message'] = 'proxy forbidden';
             } else if (preg_match('/We need to confirm your identity before you can log in/i', $res)) {
                 $result['message'] = 'proxy not trusted';
-            } else if (preg_match('/We require everyone to use the name they use in everyday life|Using your real name makes it easier for friends to recognize you/i', $res)) {
+            } else if (preg_match('/It looks like you\'re trying to create an account for a business|We require everyone to use the name they use in everyday life|Using your real name makes it easier for friends to recognize you/i', $res)) {
                 $result['status'] = 2;
             } else if (preg_match('/Please use an email address or mobile number that is not already in use by a registered account/i', $res)) {
                 echo 'Phone used: ' . $config['reg_email__'];
             } else if (preg_match('/c_user=(\d+);/', $cookie, $matches)) {
-
                 $data = $this->changeToEmail($cookie);
 
                 $result['step'] = $data['step'];
@@ -95,7 +94,6 @@ class FacebookScraper
                     $result['status'] = 1;
                     $result['cookie'] = $cookie;
                     $result['uid'] = $matches[1];
-
                 } else {
                     $result['status'] = -1;
                     $result['message'] = 'proxy not trusted';
