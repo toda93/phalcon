@@ -24,7 +24,7 @@ class HttpClient
             'proxyuserpwd' => null
         ], $opt);
 
-        if(empty($opt['agent'])){
+        if (empty($opt['agent'])) {
             $agent_list = [
                 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3) Gecko/20090305 Firefox/3.1b3 GTB5',
                 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2',
@@ -132,6 +132,11 @@ class HttpClient
             ->addOption(CURLOPT_PROXYUSERPWD, $this->opt['proxyuserpwd']);
 
 
+        if($this->opt['proxy_type'] == 'sock'){
+            $this->addOption(CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        }
+
+
         if (!empty($this->opt['cookie'])) {
             $this->addOption(CURLOPT_COOKIE, $this->opt['cookie']);
         } else {
@@ -145,7 +150,8 @@ class HttpClient
         }
     }
 
-    public function getAgent(){
+    public function getAgent()
+    {
         return $this->opt['agent'];
     }
 
@@ -184,7 +190,8 @@ class HttpClient
         return $this->addOption(CURLOPT_FOLLOWLOCATION, true);
     }
 
-    public function timeout($time = 30){
+    public function timeout($time = 30)
+    {
         return $this->addOption(CURLOPT_TIMEOUT, $time);
     }
 
