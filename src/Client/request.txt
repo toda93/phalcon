@@ -1,0 +1,55 @@
+*   Trying 104.27.152.38...
+* Connected to temp-mail.org (104.27.152.38) port 443 (#0)
+* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+* NPN, negotiated HTTP1.1
+* SSL connection using TLSv1.2 / ECDHE-ECDSA-AES128-GCM-SHA256
+* Server certificate:
+* 	 subject: OU=Domain Control Validated; OU=PositiveSSL Multi-Domain; CN=sni204347.cloudflaressl.com
+* 	 start date: 2017-03-04 00:00:00 GMT
+* 	 expire date: 2017-09-10 23:59:59 GMT
+* 	 subjectAltName: temp-mail.org matched
+* 	 issuer: C=GB; ST=Greater Manchester; L=Salford; O=COMODO CA Limited; CN=COMODO ECC Domain Validation Secure Server CA 2
+* 	 SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+> GET / HTTP/1.1
+Host: temp-mail.org
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/528.16 (KHTML, like Gecko) Version/4.0 Safari/528.16
+Accept: */*
+
+< HTTP/1.1 200 OK
+< Date: Thu, 16 Mar 2017 08:26:28 GMT
+< Content-Type: text/html; charset=UTF-8
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+* Added cookie __cfduid="d6d11da36f7ab8d0c87424066d0feb0a61489652787" for domain temp-mail.org, path /, expire 1521188787
+< Set-Cookie: __cfduid=d6d11da36f7ab8d0c87424066d0feb0a61489652787; expires=Fri, 16-Mar-18 08:26:27 GMT; path=/; domain=.temp-mail.org; HttpOnly
+< Display: orig_site_sol
+< Expires: Wed, 15 Mar 2017 08:26:28 UTC
+< PageSpeed: off
+< Response: 200
+< Vary: Accept-Encoding,X-APP-JSON
+< X-Middleton-Display: orig_site_sol
+< X-Middleton-Response: 200
+< X-Sol: orig
+* Added cookie csrf="12f21b925afeb502401045b79be63251" for domain temp-mail.org, path /, expire 1489659988
+< Set-Cookie: csrf=12f21b925afeb502401045b79be63251; expires=Thu, 16-Mar-2017 10:28:15 GMT; Max-Age=7200; path=/; domain=temp-mail.org
+* Added cookie mail="rita%40lillemap.net" for domain temp-mail.org, path /, expire 1521209728
+< Set-Cookie: mail=rita%40lillemap.net; expires=Fri, 16-Mar-2018 14:17:15 GMT; Max-Age=31556940; path=/; domain=temp-mail.org
+* Added cookie lang="en" for domain temp-mail.org, path /, expire 1521209728
+< Set-Cookie: lang=en; expires=Fri, 16-Mar-2018 14:17:15 GMT; Max-Age=31556940; path=/; domain=temp-mail.org
+* Added cookie ezouid_30309="1386928535" for domain temp-mail.org, path /, expire 1551860787
+< Set-Cookie: ezouid_30309=1386928535; Path=/; Domain=temp-mail.org; Expires=Wed, 06 Mar 2019 08:26:27 UTC
+* Added cookie lp_30309="https://temp-mail.org/" for domain temp-mail.org, path /, expire 1489659987
+< Set-Cookie: lp_30309=https://temp-mail.org/; Path=/; Domain=temp-mail.org; Expires=Thu, 16 Mar 2017 10:26:27 UTC
+* Added cookie ezoadgid_30309="-1" for domain temp-mail.org, path /, expire 1489654587
+< Set-Cookie: ezoadgid_30309=-1; Path=/; Domain=temp-mail.org; Expires=Thu, 16 Mar 2017 08:56:27 UTC
+* Added cookie ezoab_30309="mod1-" for domain temp-mail.org, path /, expire 1489654587
+< Set-Cookie: ezoab_30309=mod1-; Path=/; Domain=temp-mail.org; Expires=Thu, 16 Mar 2017 08:56:27 UTC
+* Added cookie active_template::30309="orig_site" for domain temp-mail.org, path /, expire 1489825587
+< Set-Cookie: active_template::30309=orig_site; Path=/; Domain=temp-mail.org; Expires=Sat, 18 Mar 2017 08:26:27 UTC
+* Added cookie ezovuuid_30309="cb3a1066-84c5-4081-47e6-40fbd69c9663" for domain temp-mail.org, path /, expire 1489654588
+< Set-Cookie: ezovuuid_30309=cb3a1066-84c5-4081-47e6-40fbd69c9663; Path=/; Domain=temp-mail.org; Expires=Thu, 16 Mar 2017 08:56:28 UTC
+< Cache-Control: max-age=0, must-revalidate, no-cache, no-store
+< Server: cloudflare-nginx
+< CF-RAY: 340653e06f6e0835-SIN
+< 
+* Connection #0 to host temp-mail.org left intact

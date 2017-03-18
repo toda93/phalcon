@@ -112,7 +112,6 @@ class Controller extends ControllerRoot
                 $message = Validate::$method($key, $arr_check[$key], $param);
 
 
-
                 if (!empty($message)) {
 
                     $valid = false;
@@ -162,6 +161,20 @@ class Controller extends ControllerRoot
         if (empty($data) || count($data) == 0 || count($data->items) == 0) {
             $this->abort(404);
         }
+    }
+
+    public function loadRequest($model, $valid_callback, $guard = [])
+    {
+        $values = call_user_func($valid_callback);
+
+        foreach ($values as $key => $value) {
+
+            if (!in_array($key, $guard) && property_exists($model, $key)) {
+                $model->$key = $value;
+            }
+        }
+        return $model;
+
     }
 
     protected function abort($code, $message = '')

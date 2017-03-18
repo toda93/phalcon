@@ -297,7 +297,8 @@ class QueryBuilder
         return $this->take($take)->skip($skip);
     }
 
-    public function getQuery(){
+    public function getQuery()
+    {
         return $this->builder->getPhql();
     }
 
@@ -309,6 +310,12 @@ class QueryBuilder
     public function first()
     {
         return $this->builder->limit(1)->getQuery()->getSingleResult();
+    }
+
+    public function count()
+    {
+        $result = $this->builder->columns('COUNT(*) as number')->getQuery()->getSingleResult();
+        return $result->number;
     }
 
     public function firstOrNew()
