@@ -21,7 +21,8 @@ class HttpClient
             'verify_peer' => false,
             'return_transfer' => true,
             'proxy' => null,
-            'proxyuserpwd' => null
+            'proxyuserpwd' => null,
+            'proxy_type' => 'proxy'
         ], $opt);
 
         if (empty($opt['agent'])) {

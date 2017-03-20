@@ -14,14 +14,12 @@ class FacebookOAuth
 
     protected $client = null;
 
-    public function __construct($config, $token = [], $proxy = null)
+    public function __construct($config, $token = [], $client_opt = [])
     {
         $this->config = $config;
         $this->token = $token;
 
-        $this->client = new HttpClient([
-            'proxy' => $proxy
-        ]);
+        $this->client = new HttpClient($client_opt);
     }
 
     public function getToken()

@@ -14,13 +14,13 @@ class GoogleOAuth
 
     protected $client = null;
 
-    public function __construct($config, $token = [], $proxy = null)
+    public function __construct($config, $token = [], $client_opt = [])
     {
         $this->config = $config;
         $this->token = $token;
 
         $this->client = new HttpClient([
-            'proxy' => $proxy
+            'proxy' => $client_opt
         ]);
 
         if(!empty($this->token)){

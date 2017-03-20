@@ -9,21 +9,10 @@ class FacebookGraph extends FacebookOAuth
 
     protected $fanpage_token = null;
 
-    public function __construct($config, $token = [], $proxy = null)
+
+    public function getUserInfo($uid = 'me')
     {
-        parent::__construct($config, $token);
-
-        if (empty($token)) {
-            $this->token['access_token'] = $this->config['client_id'] . '|' . $this->config['client_secret'];
-        } else {
-            $this->refreshToken();
-        }
-    }
-
-
-    public function getMyInfo()
-    {
-        $res = $this->client->get($this->graph_endpoint . 'me/accounts?access_token=' . $this->token['access_token']);
+        $res = $this->client->get($this->graph_endpoint . $uid . '?access_token=' . $this->token['access_token']);
 
         $res = json_decode($res, true);
 
@@ -162,7 +151,7 @@ class FacebookGraph extends FacebookOAuth
         $result = $res['data'];
 
         while (!empty($res['paging']['next'])) {
-            $res =$this->client->get($res['paging']['next']);
+            $res = $this->client->get($res['paging']['next']);
             $res = json_decode($res, true);
 
             $result = array_merge($result, $res['data']);
