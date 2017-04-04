@@ -256,6 +256,42 @@ class QueryBuilder
         return $this;
     }
 
+    public function innerJoin($model, $conditions = null, $alias = null)
+    {
+        if (!is_null($conditions)) {
+            $this->builder->innerJoin($model, $conditions);
+        } else if (!is_null($alias)) {
+            $this->builder->innerJoin($model, $conditions, $alias);
+        } else {
+            $this->builder->innerJoin($model);
+        }
+        return $this;
+    }
+
+    public function leftJoin($model, $conditions = null, $alias = null)
+    {
+        if (!is_null($conditions)) {
+            $this->builder->leftJoin($model, $conditions);
+        } else if (!is_null($alias)) {
+            $this->builder->leftJoin($model, $conditions, $alias);
+        } else {
+            $this->builder->leftJoin($model);
+        }
+        return $this;
+    }
+
+    public function rightJoin($model, $conditions = null, $alias = null)
+    {
+        if (!is_null($conditions)) {
+            $this->builder->rightJoin($model, $conditions);
+        } else if (!is_null($alias)) {
+            $this->builder->rightJoin($model, $conditions, $alias);
+        } else {
+            $this->builder->rightJoin($model);
+        }
+        return $this;
+    }
+
     public function groupBy($group)
     {
 
