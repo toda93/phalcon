@@ -163,16 +163,22 @@ class Controller extends ControllerRoot
         }
     }
 
-    public function loadRequest($model, $valid_callback, $guard = [])
+    public function loadRequest($model, $valid_callback = null, $guard = [])
     {
-        $values = call_user_func($valid_callback);
 
+        if (empty($valid_callback)) {
+            $values = $this->request->get();
+        } else {
+            $values = call_user_func($valid_callback);
+
+        }
         foreach ($values as $key => $value) {
 
             if (!in_array($key, $guard) && property_exists($model, $key)) {
                 $model->$key = $value;
             }
         }
+
         return $model;
 
     }

@@ -146,16 +146,27 @@ class Form
 
     public function checkboxList(array $values, array $options = array())
     {
-        $this->opts = $options;
         $temp = $this->buildValue();
 
+        if (isset($options['checkbox-type']) && $options['checkbox-type'] == 'json') {
+            unset($options['checkbox-type']);
+
+            $temp = json_decode($temp, true);
+        } else {
+            $temp = explode(',', $temp);
+        }
+
+        $this->opts = $options;
+
+
         $this->html = "";
+
 
         foreach ($values as $key => $value) {
 
             $this->html .= "<span class='checkbox-inline'><input type='checkbox' name='{$this->name}[]' value='$key'";
 
-            if ($temp == $key) {
+            if (in_array($key, $temp)) {
                 $this->html .= ' checked';
             }
             $this->html .= "{options}> $value </span>";
