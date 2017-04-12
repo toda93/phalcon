@@ -132,6 +132,7 @@ class Form
 
         $temp = $this->buildValue();
 
+
         foreach ($values as $key => $value) {
             if ($temp == $key) {
                 $this->html .= "<option value='$key' selected>$value</option>";

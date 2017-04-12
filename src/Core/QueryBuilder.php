@@ -350,42 +350,8 @@ class QueryBuilder
 
     public function count()
     {
-        $result = $this->builder->columns('COUNT(*) as number')->getQuery()->getSingleResult();
-        return $result->number;
-    }
-
-    public function firstOrNew()
-    {
-        $result = $this->first();
-        if (empty($result)) {
-            $class = $this->builder->getFrom();
-            $result = new $class;
-        }
-        return $result;
-    }
-
-    public function toArray()
-    {
-        return $this->builder->getQuery()->execute()->toArray();
-    }
-
-    public function toJson()
-    {
-        return json_encode($this->builder->getQuery()->execute()->toArray());
-    }
-
-    public function rawSelect($sql)
-    {
-        $class = $this->builder->getFrom();
-        $obj = new $class;
-        return new Resultset(null, $obj, $obj->getReadConnection()->query($sql));
-    }
-
-    public function rawUpdate($sql)
-    {
-        $class = $this->builder->getFrom();
-        $obj = new $class;
-        return $obj->getWriteConnection()->query($sql);
+        $result = $this->builder->columns('COUNT(*) as total')->getQuery()->getSingleResult();
+        return $result->total;
     }
 
     public function pagination($page = 1, $limit = 50)
@@ -398,5 +364,53 @@ class QueryBuilder
             )
         );
         return $result->getPaginate();
+    }
+
+    public function firstOrNew()
+    {
+        $result = $this->first();
+        if (empty($result)) {
+            $class = $this->builder->getFrom();
+            $result = new $class;
+        }
+        return $result;
+    }
+
+    public function selectRaw($query, $first = false)
+    {
+        $class = $this->builder->getFrom();
+        $obj = new $class;
+        $result = new Resultset(null, $obj, $obj->getReadConnection()->query($query));
+        if ($first) {
+            return $result->getFirst();
+        }
+        return $result;
+    }
+
+    public function updateRaw($query)
+    {
+        $class = $this->builder->getFrom();
+        $obj = new $class;
+        return $obj->getWriteConnection()->query($query);
+    }
+
+    public function paginationRaw($query, $page = 1, $limit = 50)
+    {
+        $query = preg_replace('/LIMIT(.*)/i', '', $query);
+        $count_query = preg_replace('/select(.*?)from(.*?)/i', 'SELECT COUNT(*) as total FROM', $query);
+
+        $query .= " LIMIT $limit OFFSET " . (($page - 1) * $limit);
+
+        $total = $this->selectRaw($count_query)->toArray()[0]['total'];
+
+        $obj = new \stdClass();
+        $obj->total_items = $total;
+        $obj->last = $obj->total_pages = (int)($total / $limit);
+        $obj->current = $page;
+        $obj->before = ($page > 1) ? $page - 1 : 1;
+        $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
+        $obj->items = $this->selectRaw($query);
+
+        return $obj;
     }
 }
