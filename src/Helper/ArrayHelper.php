@@ -1,5 +1,5 @@
 <?php
-namespace Toda\Helpers;
+namespace Toda\Helper;
 class ArrayHelper
 {
     public static function sort(&$array, $key, $reverse = false)

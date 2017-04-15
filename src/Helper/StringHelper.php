@@ -1,5 +1,5 @@
 <?php
-namespace Toda\Helpers;
+namespace Toda\Helper;
 class StringHelper
 {
     public static function slug($str){

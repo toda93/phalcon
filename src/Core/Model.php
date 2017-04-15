@@ -56,7 +56,7 @@ class Model extends \Phalcon\Mvc\Model
     public function beforeUpdate()
     {
         if ($this->track_time) {
-            $this->created_at = $this->updated_at = time();
+            $this->created_at = time();
         }
         if ($this->track_user) {
             if (empty($this->getDI()->getSession()->get('auth'))) {

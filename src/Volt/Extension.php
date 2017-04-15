@@ -22,7 +22,7 @@ class Extension
                 return '\Toda\Html\Form::end()';
             }
             if($name == 'elapsed'){
-                return '\Toda\Helpers\TimeHelper::elapsed('. $arguments . ')';
+                return '\Toda\Helper\TimeHelper::elapsed('. $arguments . ')';
             }
         }
     }

@@ -1,5 +1,5 @@
 <?php
-namespace Toda\Helpers;
+namespace Toda\Helper;
 class TimeHelper
 {
     public static function speed($callback)
