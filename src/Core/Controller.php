@@ -90,7 +90,6 @@ class Controller extends ControllerRoot
 
     protected function validate(array $conditions, $overwrite = [])
     {
-
         $error_messages = [];
 
         $arr_check = array_map('trim', $this->request->get());
@@ -165,6 +164,7 @@ class Controller extends ControllerRoot
 
     public function loadRequest($model, $valid_callback = null, $guard = [])
     {
+        $guard[] = 'id';
 
         if (empty($valid_callback)) {
             $values = $this->request->get();
