@@ -134,7 +134,7 @@ class Form
 
 
         foreach ($values as $key => $value) {
-            if ($temp == $key) {
+            if ($temp === (string)$key) {
                 $this->html .= "<option value='$key' selected>$value</option>";
             } else {
                 $this->html .= "<option value='$key'>$value</option>";
@@ -201,7 +201,7 @@ class Form
         $temp = $this->buildValue();
 
         $this->html = "<input type='checkbox' name='{$this->name}' {options} value='$value'";
-        if ($temp == $value) {
+        if ($temp === (string)$value) {
             $this->html .= ' checked';
         }
         $this->html .= ">";
