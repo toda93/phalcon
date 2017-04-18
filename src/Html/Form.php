@@ -121,7 +121,7 @@ class Form
     public function file(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='file' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='file' name='{$this->name}' {options}>";
         return $this;
     }
 

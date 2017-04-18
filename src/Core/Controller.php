@@ -98,18 +98,34 @@ class Controller extends ControllerRoot
 
         $arr_check = array_map('htmlspecialchars', $arr_check);
 
+        if ($this->request->hasFiles() == true) {
+            foreach ($this->request->getUploadedFiles() as $file) {
+                $arr_check[$file->getKey()] = $file;
+            }
+        }
+
+
         $valid = true;
 
         foreach ($conditions as $key => $condition) {
 
             $arr_condition = explode('|', $condition);
+
             foreach ($arr_condition as $item) {
+
                 $params = explode(':', $item, 2);
                 $method = $params[0];
                 $param = empty($params[1]) ? '' : $params[1];
 
-                $message = Validate::$method($key, $arr_check[$key], $param);
+                if ($method == 'file') {
 
+                    if (is_object($arr_check[$key])) {
+                        $message = Validate::$method($key, $arr_check[$key]->getRealType(), $param);
+                        $arr_check[$key] = '';
+                    }
+                } else {
+                    $message = Validate::$method($key, $arr_check[$key], $param);
+                }
 
                 if (!empty($message)) {
 

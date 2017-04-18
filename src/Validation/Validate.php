@@ -11,7 +11,7 @@ class Validate
 
     public static function email($name, $value, $param)
     {
-        return empty($value) || preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value) ? '' : sprintf(lang('validate', 'email'), $name);
+        return empty($value) || preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value) ? '' : sprintf(lang('validate', 'email'), $value);
     }
 
     public static function unique($name, $value, $param)
@@ -57,6 +57,13 @@ class Validate
 
     public static function confirmed($name, $value, $param)
     {
-        return empty($value) || ($value === $param) ? '' : sprintf(lang('confirmed', 'email'), $value);
+        return empty($value) || ($value === $param) ? '' : sprintf(lang('validate', 'confirmed'), $value);
+    }
+
+    public static function file($name, $value, $param)
+    {
+        $result = FileMime::checkExtenstion($value, $param);
+
+        return ($result['status'] == 1) ? '' : sprintf(lang('validate', 'file'), $result['ext']);
     }
 }
