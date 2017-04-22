@@ -100,7 +100,10 @@ class Controller extends ControllerRoot
 
         if ($this->request->hasFiles() == true) {
             foreach ($this->request->getUploadedFiles() as $file) {
-                $arr_check[$file->getKey()] = $file;
+
+                if($file->getSize() != 0){
+                    $arr_check[$file->getKey()] = $file;
+                }
             }
         }
 
@@ -118,16 +121,18 @@ class Controller extends ControllerRoot
                 $param = empty($params[1]) ? '' : $params[1];
 
                 if ($method == 'file') {
-
                     if (is_object($arr_check[$key])) {
                         $message = Validate::$method($key, $arr_check[$key]->getRealType(), $param);
-                        $arr_check[$key] = '';
                     }
                 } else {
                     $message = Validate::$method($key, $arr_check[$key], $param);
                 }
 
                 if (!empty($message)) {
+
+                    if(!is_string($arr_check[$key])){
+                        $arr_check[$key] = '';
+                    }
 
                     $valid = false;
                     $error_messages[$key] = $message;

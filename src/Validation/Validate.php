@@ -6,7 +6,7 @@ class Validate
 {
     public static function required($name, $value, $param)
     {
-        return is_null($value) || $value == '' ? sprintf(lang('validate', 'required'), $value) : '';
+        return is_null($value) || $value == '' ? sprintf(lang('validate', 'required'), $name) : '';
     }
 
     public static function email($name, $value, $param)
@@ -60,10 +60,20 @@ class Validate
         return empty($value) || ($value === $param) ? '' : sprintf(lang('validate', 'confirmed'), $value);
     }
 
+    public static function in($name, $value, $param)
+    {
+        $params = explode(',', $param);
+
+        return empty($value) || (in_array($value, $params)) ? '' : sprintf(lang('validate', 'in'), $value, $param);
+    }
+
+
     public static function file($name, $value, $param)
     {
         $result = FileMime::checkExtenstion($value, $param);
 
         return ($result['status'] == 1) ? '' : sprintf(lang('validate', 'file'), $result['ext']);
     }
+
+
 }
