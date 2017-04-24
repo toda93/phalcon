@@ -21,7 +21,11 @@ class Pagination
     public static function render(array $options = [])
     {
 
-        $url = $_SERVER['REQUEST_URI'];
+        if (empty($options['url'])) {
+            $url = $_SERVER['REQUEST_URI'];
+        } else {
+            $url = $options['url'];
+        }
 
         $url = preg_replace('/&?page=([^&]+)/', '', $url);
 

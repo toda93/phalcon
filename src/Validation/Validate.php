@@ -47,6 +47,8 @@ class Validate
 
     public static function min($name, $value, $param)
     {
+
+
         return empty($value) || (strlen($value) >= $param) ? '' : sprintf(lang('validate', 'min'), $value, $param);
     }
 
