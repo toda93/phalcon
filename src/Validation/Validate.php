@@ -72,7 +72,7 @@ class Validate
     {
         $result = FileMime::checkExtenstion($value, $param);
 
-        return ($result['status'] == 1) ? '' : sprintf(lang('validate', 'file'), $result['ext']);
+        return ($result['status'] == 1) ? '' : sprintf(lang('validate', 'file'), $value);
     }
 
 

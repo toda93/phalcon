@@ -122,7 +122,7 @@ class Controller extends ControllerRoot
 
                 if ($method == 'file') {
                     if (is_object($arr_check[$key])) {
-                        $message = Validate::$method($key, $arr_check[$key]->getRealType(), $param);
+                        $message = Validate::$method($key, $arr_check[$key]->getType(), $param);
                     }
                 } else {
                     $message = Validate::$method($key, $arr_check[$key], $param);
