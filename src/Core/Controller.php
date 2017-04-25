@@ -88,6 +88,22 @@ class Controller extends ControllerRoot
         return $this->response->setJsonContent($content)->send();
     }
 
+    protected function download($file, $expires = 0)
+    {
+
+        $this->response->resetHeaders();
+        $this->response->setHeader("Pragma", "public");
+        $this->response->setHeader("Expires", $expires);
+        $this->response->setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+        $this->response->setHeader("Content-Type", mime_content_type($file));
+        $this->response->setHeader("Content-Disposition", 'attachment; filename="' . basename($file) . '";');
+        $this->response->setHeader("Content-Length:", filesize($file));
+        $this->response->setHeader("Content-Transfer-Encoding", "binary");
+        readfile($file);
+        exit;
+
+    }
+
     protected function validate(array $conditions, $overwrite = [])
     {
         $error_messages = [];
@@ -101,7 +117,7 @@ class Controller extends ControllerRoot
         if ($this->request->hasFiles() == true) {
             foreach ($this->request->getUploadedFiles() as $file) {
 
-                if($file->getSize() != 0){
+                if ($file->getSize() != 0) {
                     $arr_check[$file->getKey()] = $file;
                 }
             }
@@ -130,7 +146,7 @@ class Controller extends ControllerRoot
 
                 if (!empty($message)) {
 
-                    if(!is_string($arr_check[$key])){
+                    if (!is_string($arr_check[$key])) {
                         $arr_check[$key] = '';
                     }
 

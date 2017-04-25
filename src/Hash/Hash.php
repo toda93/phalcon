@@ -11,11 +11,12 @@ class Hash{
     }
 
     public static function encrypt($pure_string) {
-        return bin2hex(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  page('encryption_key'), $pure_string, MCRYPT_MODE_ECB));
+        return bin2hex(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  app_key(), $pure_string, MCRYPT_MODE_ECB));
     }
 
     public static function decrypt($encrypted_string) {
-        return mcrypt_decrypt(MCRYPT_RIJNDAEL_256, page('encryption_key'), hex2bin($encrypted_string), MCRYPT_MODE_ECB);
+        $result = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, app_key(), hex2bin($encrypted_string), MCRYPT_MODE_ECB);
+        return strval(str_replace("\0", "", $result));
     }
 }
 
