@@ -27,17 +27,13 @@ class Model extends \Phalcon\Mvc\Model
         return call_user_func_array([$builder, $method], $parameters);
     }
 
-    public function disableTrackTime()
+    public function disableTrack($time = false, $user = false)
     {
-        $this->track_time = false;
+        $this->track_time = $time;
+        $this->track_user = $user;
         return $this;
     }
 
-    public function disableTrackUser()
-    {
-        $this->track_user = false;
-        return $this;
-    }
 
     public function beforeCreate()
     {
