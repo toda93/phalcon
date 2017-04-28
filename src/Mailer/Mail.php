@@ -24,7 +24,7 @@ class Mail
      */
     public function send($to, $name, $subject, $body)
     {
-        
+
         // Create the message
         $message = \Swift_Message::newInstance();
 
@@ -45,6 +45,13 @@ class Mail
                 $this->config->port,
                 $this->config->security
             )
+                ->setStreamOptions([
+                    'ssl' => [
+                        'allow_self_signed' => true,
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                    ],
+                ])
                 ->setUsername($this->config->username)
                 ->setPassword($this->config->password);
         }
