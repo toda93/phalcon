@@ -90,19 +90,17 @@ class Controller extends ControllerRoot
 
     protected function download($file, $expires = 0)
     {
-
-        ob_clean();
-        flush();
-
         $this->response->resetHeaders();
         $this->response->setHeader('Pragma', 'public');
         $this->response->setHeader('Expires', $expires);
         $this->response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-        $this->response->setHeader('Connection', 'Keep-Alive');
+        $this->response->setHeader('Cache-Control', 'public');
+        $this->response->setHeader('Content-Description', 'File Transfer');
         $this->response->setHeader('Content-Type', 'application/octet-stream');
         $this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '";');
-        $this->response->setHeader('Content-Length', filesize($file));
         $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+        $this->response->setHeader('Content-Length', filesize($file));
+        ob_end_flush();
         readfile($file);
         exit;
 
