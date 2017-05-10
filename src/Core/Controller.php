@@ -90,6 +90,10 @@ class Controller extends ControllerRoot
 
     protected function download($file, $expires = 0)
     {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
         $this->response->resetHeaders();
         $this->response->setHeader('Pragma', 'public');
         $this->response->setHeader('Expires', $expires);
@@ -100,7 +104,7 @@ class Controller extends ControllerRoot
         $this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '";');
         $this->response->setHeader('Content-Transfer-Encoding', 'binary');
         $this->response->setHeader('Content-Length', filesize($file));
-        ob_end_flush();
+
         readfile($file);
         exit;
 
