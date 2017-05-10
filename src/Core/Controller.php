@@ -108,8 +108,14 @@ class Controller extends ControllerRoot
 //        readfile($file);
 //        die();
 
-        $this->view->disable();
-        $this->response->setFileToSend($file, basename($file))->send();
+        $this->view->setRenderLevel(View::LEVEL_NO_RENDER);
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        header('Content-Description: File Transfer');
+        header('Content-type:: application/octet-stream');
+        header('Content-length: ' . filesize($file));
+        header('Content-Disposition: attachment; filename="'. basename($file).'"');
+        readfile($file);
+        die();
 
     }
 
