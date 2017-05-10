@@ -109,11 +109,14 @@ class Controller extends ControllerRoot
 //        die();
 
         $this->view->setRenderLevel(View::LEVEL_NO_RENDER);
+        header('Pragma: public');
+        header('Expires: ' . $expires);
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header('Content-Description: File Transfer');
         header('Content-type:: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . basename($file) . '"');
         header('Content-length: ' . filesize($file));
-        header('Content-Disposition: attachment; filename="'. basename($file).'"');
+        header('Content-Transfer-Encoding: binary');
         readfile($file);
         die();
 
