@@ -90,23 +90,26 @@ class Controller extends ControllerRoot
 
     protected function download($file, $expires = 0)
     {
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
+//        while (ob_get_level() > 0) {
+//            ob_end_clean();
+//        }
+//
+//        $this->response->resetHeaders();
+//        $this->response->setHeader('Pragma', 'public');
+//        $this->response->setHeader('Expires', $expires);
+//        $this->response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+//        $this->response->setHeader('Cache-Control', 'public');
+//        $this->response->setHeader('Content-Description', 'File Transfer');
+//        $this->response->setHeader('Content-Type', 'application/octet-stream');
+//        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '";');
+//        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+//        $this->response->setHeader('Content-Length', filesize($file));
+//
+//        readfile($file);
+//        die();
 
-        $this->response->resetHeaders();
-        $this->response->setHeader('Pragma', 'public');
-        $this->response->setHeader('Expires', $expires);
-        $this->response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-        $this->response->setHeader('Cache-Control', 'public');
-        $this->response->setHeader('Content-Description', 'File Transfer');
-        $this->response->setHeader('Content-Type', 'application/octet-stream');
-        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '";');
-        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
-        $this->response->setHeader('Content-Length', filesize($file));
-
-        readfile($file);
-        exit;
+        $this->view->disable();
+        $this->response->setFileToSend($file, basename($file))->send();
 
     }
 
