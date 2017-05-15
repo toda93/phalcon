@@ -1,0 +1,12 @@
+* Found bundle for host tenten.vn: 0x352ba0
+* Re-using existing connection! (#209) with host tenten.vn
+* Connected to tenten.vn (103.18.6.97) port 443 (#209)
+> POST /Ajax/ajaxSearchSingle HTTP/1.1
+Host: tenten.vn
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27
+Accept: */*
+Cookie: CAKEPHP=9vme2lpcaa7lt7bk7l6r4iqel2
+Content-Length: 28
+Content-Type: application/x-www-form-urlencoded
+
+* upload completely sent off: 28 out of 28 bytes

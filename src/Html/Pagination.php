@@ -30,7 +30,12 @@ class Pagination
         $url = preg_replace('/&?page=([^&]+)/', '', $url);
 
         if (preg_match('/\?/', $url)) {
-            $url = $url . '&page=';
+            if(preg_match('/\?$/', $url)){
+                $url = $url . 'page=';
+            } else {
+                $url = $url . '&page=';
+            }
+
         } else {
             $url = $url . '?page=';
         }
