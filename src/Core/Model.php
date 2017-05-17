@@ -34,7 +34,6 @@ class Model extends \Phalcon\Mvc\Model
         return $this;
     }
 
-
     public function beforeCreate()
     {
         if ($this->track_time) {

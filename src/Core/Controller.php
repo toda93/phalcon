@@ -23,9 +23,6 @@ class Controller extends ControllerRoot
         $this->view->setVars([
             'old' => $this->old
         ]);
-
-        $this->response->setHeader("Content-Type", "text/html; charset=utf-8");
-
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
     }
 

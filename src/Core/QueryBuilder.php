@@ -394,6 +394,10 @@ class QueryBuilder
         return $obj->getWriteConnection()->query($query);
     }
 
+    public  function updateAll(){
+        echo $this->builder->getFrom();
+    }
+
     public function paginationRaw($query, $page = 1, $limit = 50)
     {
         $query = preg_replace('/LIMIT(.*)/i', '', $query);
