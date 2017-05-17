@@ -1,12 +1,35 @@
-* Found bundle for host tenten.vn: 0x352ba0
-* Re-using existing connection! (#209) with host tenten.vn
-* Connected to tenten.vn (103.18.6.97) port 443 (#209)
-> POST /Ajax/ajaxSearchSingle HTTP/1.1
-Host: tenten.vn
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27
+* Hostname in DNS cache was stale, zapped
+*   Trying 31.13.95.8...
+* Connected to graph.facebook.com (31.13.95.8) port 443 (#0)
+* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+* NPN, negotiated HTTP1.1
+* SSL connection using TLSv1.2 / ECDHE-ECDSA-AES128-GCM-SHA256
+* Server certificate:
+* 	 subject: C=US; ST=California; L=Menlo Park; O=Facebook, Inc.; CN=*.facebook.com
+* 	 start date: 2016-12-09 00:00:00 GMT
+* 	 expire date: 2018-01-25 12:00:00 GMT
+* 	 issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=DigiCert SHA2 High Assurance Server CA
+* 	 SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+> POST /v2.6/me/messenger_profile?access_token=EAABxDR1h9aoBAPtlZBFBVcCeQhT2ZCWUPcWH5M1GgiwaSx3wSUZCZC0nwA4Ef2fjAOIsusZAWlgszYCwkuUlWJTHVMMkuAWqIJnB77OWn2OZBzQbUhphkwOST6FOlfZASHE9pHmqxEY0fiZA5Cx4WOEUWXLNykMjoaljZBmGC7FjXggZDZD HTTP/1.1
+Host: graph.facebook.com
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.173.1 Safari/530.5
 Accept: */*
-Cookie: CAKEPHP=9vme2lpcaa7lt7bk7l6r4iqel2
-Content-Length: 28
-Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
+Content-Length: 334
 
-* upload completely sent off: 28 out of 28 bytes
+* upload completely sent off: 334 out of 334 bytes
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Origin: *
+< Pragma: no-cache
+< Cache-Control: private, no-cache, no-store, must-revalidate
+< x-fb-rev: 3026480
+< Content-Type: application/json; charset=UTF-8
+< x-fb-trace-id: Afy5Ete/mox
+< facebook-api-version: v2.9
+< Expires: Sat, 01 Jan 2000 00:00:00 GMT
+< X-FB-Debug: lNaXMVPoT7/2FJL4quDq009jkUuVcUYTbspTWxGuwqoslvvaBdR+UfM59VMvWzhlhjF86dKG1gMT2UegzsX8TQ==
+< Date: Wed, 17 May 2017 09:12:38 GMT
+< Connection: keep-alive
+< Content-Length: 26
+< 
+* Connection #0 to host graph.facebook.com left intact

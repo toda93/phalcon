@@ -12,6 +12,8 @@ class Controller extends ControllerRoot
 {
     protected $old = null;
 
+    protected $check_csrf = true;
+
     public function initialize()
     {
         $this->checkCSRF();
@@ -41,22 +43,24 @@ class Controller extends ControllerRoot
 
     protected function checkCSRF()
     {
-        if (!$this->session->has('token')) {
-            $this->session->set('token', uniqid());
-        }
-
-        if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
-
-
-            if ($this->request->isAjax()) {
-                $token = $this->request->getHeader('X-CSRF-TOKEN');
-            } else {
-                $token = $this->request->get('_csrf');
+        if($this->check_csrf){
+            if (!$this->session->has('token')) {
+                $this->session->set('token', uniqid());
             }
 
-            if ($token != $this->session->get('token')) {
+            if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
 
-                return $this->abort(403, 'Token not mismatch');
+
+                if ($this->request->isAjax()) {
+                    $token = $this->request->getHeader('X-CSRF-TOKEN');
+                } else {
+                    $token = $this->request->get('_csrf');
+                }
+
+                if ($token != $this->session->get('token')) {
+
+                    return $this->abort(403, 'Token not mismatch');
+                }
             }
         }
     }
