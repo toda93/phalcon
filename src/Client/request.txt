@@ -1,35 +1,22 @@
-* Hostname in DNS cache was stale, zapped
-*   Trying 31.13.95.8...
-* Connected to graph.facebook.com (31.13.95.8) port 443 (#0)
-* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
-* NPN, negotiated HTTP1.1
-* SSL connection using TLSv1.2 / ECDHE-ECDSA-AES128-GCM-SHA256
-* Server certificate:
-* 	 subject: C=US; ST=California; L=Menlo Park; O=Facebook, Inc.; CN=*.facebook.com
-* 	 start date: 2016-12-09 00:00:00 GMT
-* 	 expire date: 2018-01-25 12:00:00 GMT
-* 	 issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=DigiCert SHA2 High Assurance Server CA
-* 	 SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
-> POST /v2.6/me/messenger_profile?access_token=EAABxDR1h9aoBAPtlZBFBVcCeQhT2ZCWUPcWH5M1GgiwaSx3wSUZCZC0nwA4Ef2fjAOIsusZAWlgszYCwkuUlWJTHVMMkuAWqIJnB77OWn2OZBzQbUhphkwOST6FOlfZASHE9pHmqxEY0fiZA5Cx4WOEUWXLNykMjoaljZBmGC7FjXggZDZD HTTP/1.1
-Host: graph.facebook.com
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.173.1 Safari/530.5
+* Found bundle for host www.vietcombank.com.vn: 0x4b96480
+* Re-using existing connection! (#0) with host www.vietcombank.com.vn
+* Connected to www.vietcombank.com.vn (103.11.172.38) port 443 (#0)
+> GET /IBanking2015/captcha.ashx?guid=b35762f92bf64eb98a9b987008a8f066 HTTP/1.1
+Host: www.vietcombank.com.vn
+User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6
 Accept: */*
-Content-Type: application/json
-Content-Length: 334
+Cookie: ASP.NET_SessionId=bbn2jci02mofjrrg4qmkohik
 
-* upload completely sent off: 334 out of 334 bytes
 < HTTP/1.1 200 OK
-< Access-Control-Allow-Origin: *
-< Pragma: no-cache
-< Cache-Control: private, no-cache, no-store, must-revalidate
-< x-fb-rev: 3026480
-< Content-Type: application/json; charset=UTF-8
-< x-fb-trace-id: Afy5Ete/mox
-< facebook-api-version: v2.9
-< Expires: Sat, 01 Jan 2000 00:00:00 GMT
-< X-FB-Debug: lNaXMVPoT7/2FJL4quDq009jkUuVcUYTbspTWxGuwqoslvvaBdR+UfM59VMvWzhlhjF86dKG1gMT2UegzsX8TQ==
-< Date: Wed, 17 May 2017 09:12:38 GMT
-< Connection: keep-alive
-< Content-Length: 26
+< Cache-Control: private
+< Content-Length: 1427
+< Content-Type: image/jpeg
+< Server: Microsoft-IIS/8.5
+< X-Powered-By: VCB
+< X-Frame-Options: SAMEORIGIN
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Content-Security-Policy: default-src 'self'; script-src 'self' data: 'unsafe-inline' 'unsafe-eval' vietcombank.com.vn *.vietcombank.com.vn *.google-analytics.com *.verisign.com *.norton.com; style-src 'self' 'unsafe-inline' vietcombank.com.vn *.vietcombank.com.vn; img-src * 'self' data: vietcombank.com.vn *.vietcombank.com.vn *.google-analytics.com stats.g.doubleclick.net www.gstatic.com *.verisign.com *.norton.com *.longtailvideo.com; font-src 'self' data: vietcombank.com.vn *.vietcombank.com.vn; connect-src 'self' vietcombank.com.vn *.vietcombank.com.vn; frame-src 'self' gsa://onpageload; form-action *; report-uri /CspReport.ashx
+< Date: Tue, 15 Aug 2017 06:16:24 GMT
 < 
-* Connection #0 to host graph.facebook.com left intact
+* Connection #0 to host www.vietcombank.com.vn left intact

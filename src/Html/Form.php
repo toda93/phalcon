@@ -218,9 +218,11 @@ class Form
 
     public function captcha(array $options = [])
     {
+        $di = \Phalcon\DI::getDefault();
+
         $this->name = 'captcha';
         $this->opts = $options;
-        $this->html = "<div class='g-recaptcha' data-sitekey='" . page('recaptcha_key') . "' {options}></div>";
+        $this->html = "<div class='g-recaptcha' data-sitekey='" . $di->get('config')->recaptcha_key . "' {options}></div>";
         return $this;
     }
 }
