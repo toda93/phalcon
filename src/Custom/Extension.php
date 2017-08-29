@@ -1,5 +1,5 @@
 <?php
-namespace Toda\Volt;
+namespace Toda\Custom;
 
 class Extension
 {

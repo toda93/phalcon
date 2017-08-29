@@ -121,7 +121,9 @@ class HttpClient
     {
         curl_close($this->ch);
     }
-
+    public function getCurrentURL(){
+        return curl_getinfo($this->ch, CURLINFO_EFFECTIVE_URL);
+    }
 
     protected function cleanOpt()
     {
