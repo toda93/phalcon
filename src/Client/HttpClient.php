@@ -121,7 +121,9 @@ class HttpClient
     {
         curl_close($this->ch);
     }
-    public function getCurrentURL(){
+
+    public function getCurrentURL()
+    {
         return curl_getinfo($this->ch, CURLINFO_EFFECTIVE_URL);
     }
 
@@ -135,7 +137,7 @@ class HttpClient
             ->addOption(CURLOPT_PROXYUSERPWD, $this->opt['proxyuserpwd']);
 
 
-        if($this->opt['proxy_type'] == 'sock'){
+        if ($this->opt['proxy_type'] == 'sock') {
             $this->addOption(CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
         }
 
@@ -201,20 +203,19 @@ class HttpClient
 
     public function get($url)
     {
-        if (!empty($this->header)) {
-            $this->addOption(CURLOPT_HTTPHEADER, $this->header);
-            $this->header = [];
-        }
+        $this->addOption(CURLOPT_HTTPHEADER, $this->header);
+        $this->header = [];
+
         $this->addOption(CURLOPT_URL, $url);
 
 
-        $f = fopen(__DIR__ . '/request.txt', 'w');
-        $this->addOption(CURLOPT_VERBOSE, true)
-            ->addOption(CURLOPT_STDERR, $f);
+//        $f = fopen(__DIR__ . '/request.txt', 'w');
+//        $this->addOption(CURLOPT_VERBOSE, true)
+//            ->addOption(CURLOPT_STDERR, $f);
 
         $result = curl_exec($this->ch);
 
-        fclose($f);
+//        fclose($f);
 
         return $result;
     }
