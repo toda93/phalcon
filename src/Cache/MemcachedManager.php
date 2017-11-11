@@ -4,16 +4,18 @@ namespace Toda\Cache;
 class MemcachedManager
 {
     private $cache;
+    private $debug;
 
 
-    public function __construct($cache)
+    public function __construct($cache, $debug = false)
     {
         $this->cache = $cache;
+        $this->debug = $debug;
     }
 
     public function remember($name, $time = 60, $callback = false, $use = true)
     {
-        $result = $use && !is_developer() ? $this->get($name) : null;
+        $result = $use && !$this->debug ? $this->get($name) : null;
 
         if (empty($result)) {
             if (is_callable($callback)) {
@@ -22,7 +24,7 @@ class MemcachedManager
             } else {
                 $result = $callback;
             }
-            if($use){
+            if ($use) {
                 $this->set($name, $result, $time);
             }
         }
@@ -30,16 +32,19 @@ class MemcachedManager
     }
 
 
-    public function clear($name){
+    public function clear($name)
+    {
         $this->cache->delete($name);
     }
 
-    public function get($name){
+    public function get($name)
+    {
         return $this->cache->get($name);
     }
 
-    public function set($name, $content, $time){
-        if(empty($this->cache->get($name))){
+    public function set($name, $content, $time)
+    {
+        if (empty($this->cache->get($name))) {
             $this->cache->add($name, $content, $time);
         } else {
             $this->cache->replace($name, $content, $time);

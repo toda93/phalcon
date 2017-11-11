@@ -5,26 +5,27 @@ use Phalcon\Mvc\Controller as ControllerRoot;
 use Phalcon\Mvc\View;
 use Toda\Client\HttpClient;
 use Toda\Validation\ErrorMessage;
-use Toda\Validation\OldValue;
 use Toda\Validation\Validate;
 
 class Controller extends ControllerRoot
 {
-    protected $old = null;
-
     protected $check_csrf = true;
+    protected $recaptcha_secret = '';
 
     public function initialize()
     {
         $this->checkCSRF();
 
-        if ($this->session->has('old')) {
-            $this->old = new OldValue($this->session->get('old'));
-            $this->session->remove('old');
+        if (DOMAIN . $this->router->getRewriteUri() !== $this->request->getHTTPReferer()) {
+            if ($this->session->has('old')) {
+                $this->session->remove('old');
+            }
         }
+
         $this->view->setVars([
-            'old' => $this->old
+            'csrf_token' => $this->session->get('csrf_token')
         ]);
+
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
     }
 
@@ -43,13 +44,13 @@ class Controller extends ControllerRoot
 
     protected function checkCSRF()
     {
-        if($this->check_csrf){
-            if (!$this->session->has('token')) {
-                $this->session->set('token', uniqid());
-            }
+        if (!$this->session->has('csrf_token')) {
+            $this->session->set('csrf_token', uniqid());
+        }
+
+        if ($this->check_csrf) {
 
             if ($this->request->isPost() && $this->dispatcher->getControllerName() != 'error') {
-
 
                 if ($this->request->isAjax()) {
                     $token = $this->request->getHeader('X-CSRF-TOKEN');
@@ -57,8 +58,7 @@ class Controller extends ControllerRoot
                     $token = $this->request->get('_csrf');
                 }
 
-                if ($token != $this->session->get('token')) {
-
+                if ($token != $this->session->get('csrf_token')) {
                     return $this->abort(403, 'Token not mismatch');
                 }
             }
@@ -74,6 +74,11 @@ class Controller extends ControllerRoot
         return true;
     }
 
+    protected function renderJson($content)
+    {
+        return $this->response->setJsonContent($content)->send();
+    }
+
     protected function back()
     {
         return $this->redirect($this->request->getHTTPReferer());
@@ -82,11 +87,6 @@ class Controller extends ControllerRoot
     protected function redirect($to)
     {
         return $this->response->redirect($to)->send()->send();
-    }
-
-    protected function json($content)
-    {
-        return $this->response->setJsonContent($content)->send();
     }
 
     protected function download($file, $expires = 0)
@@ -123,7 +123,6 @@ class Controller extends ControllerRoot
                 }
             }
         }
-
 
         $valid = true;
 
@@ -170,7 +169,7 @@ class Controller extends ControllerRoot
         return $arr_check;
     }
 
-    protected function verifyCaptcha()
+    protected function verifyRecaptcha()
     {
         $captcha = '';
         if ($this->request->has('g-recaptcha-response')) {
@@ -178,11 +177,11 @@ class Controller extends ControllerRoot
         }
         $client = new HttpClient();
 
-        $response = json_decode($client->get("https://www.google.com/recaptcha/api/siteverify?secret=" . $this->config->recaptcha_secret. "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
+        $response = json_decode($client->get("https://www.google.com/recaptcha/api/siteverify?secret=" . $this->recaptcha_secret . "&response=" . $captcha . "&remoteip=" . $this->request->getClientAddress())
         );
 
         if (!$response->success) {
-            $this->flash->error('Captcha incorrect.');
+            $this->flash->error('Captcha invalid!!!');
             return $this->back();
         }
     }
@@ -200,17 +199,11 @@ class Controller extends ControllerRoot
         }
     }
 
-    public function loadRequest($model, $valid_callback = null, $guard = [])
+    public function loadRequest($model, $request, $guard = [])
     {
         $guard[] = 'id';
 
-        if (empty($valid_callback)) {
-            $values = $this->request->get();
-        } else {
-            $values = call_user_func($valid_callback);
-
-        }
-        foreach ($values as $key => $value) {
+        foreach ($request as $key => $value) {
 
             if (!in_array($key, $guard) && property_exists($model, $key)) {
                 $model->$key = $value;

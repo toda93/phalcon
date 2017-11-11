@@ -3,9 +3,8 @@ namespace Toda\Core;
 
 use Phalcon\Events\Event;
 use Phalcon\Mvc\Dispatcher;
-use Phalcon\Mvc\User\Plugin;
 
-class DispatchException extends Plugin
+class DispatchException extends \Phalcon\Mvc\User\Plugin
 {
     public function beforeException(Event $event, Dispatcher $dispatcher, $exception)
     {

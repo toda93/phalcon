@@ -12,7 +12,12 @@ class HttpClient
 {
     private $ch = null;
     private $header = [];
+
+    private $default_opt;
     private $opt;
+
+    private $current_url = null;
+    private $status_code = 0;
 
     public function __construct($opt = [])
     {
@@ -21,8 +26,9 @@ class HttpClient
             'verify_peer' => false,
             'return_transfer' => true,
             'proxy' => null,
-            'proxyuserpwd' => null,
-            'proxy_type' => 'proxy'
+            'proxy_user_pwd' => null,
+            'proxy_type' => 'proxy',
+            'timeout' => 30,
         ], $opt);
 
         if (empty($opt['agent'])) {
@@ -110,49 +116,39 @@ class HttpClient
             $opt['agent'] = $agent_list[rand(0, count($agent_list) - 1)];
         }
 
-        $this->ch = curl_init();
 
-        $this->opt = $opt;
 
-        $this->cleanOpt();
+        $this->opt = $this->default_opt = $opt;
     }
 
-    public function __destruct()
+    public function getCurrentUrl()
     {
-        curl_close($this->ch);
+        return $this->current_url;
     }
 
-    public function getCurrentURL()
+    public function getStatusCode()
     {
-        return curl_getinfo($this->ch, CURLINFO_EFFECTIVE_URL);
+        return $this->status_code;
     }
 
-    protected function cleanOpt()
+    public function responseHeader($body = false)
     {
-        $this->addOption(CURLOPT_SSL_VERIFYHOST, $this->opt['verify_host'])
-            ->addOption(CURLOPT_SSL_VERIFYPEER, $this->opt['verify_peer'])
-            ->addOption(CURLOPT_RETURNTRANSFER, $this->opt['return_transfer'])
-            ->addOption(CURLOPT_USERAGENT, $this->opt['agent'])
-            ->addOption(CURLOPT_PROXY, $this->opt['proxy'])
-            ->addOption(CURLOPT_PROXYUSERPWD, $this->opt['proxyuserpwd']);
+        $this->opt['header'] = true;
+        $this->opt['nobody'] = !$body;
+        return $this;
+    }
 
+    public function follow()
+    {
+        $this->opt['follow_location'] = true;
+        return $this;
+    }
 
-        if ($this->opt['proxy_type'] == 'sock') {
-            $this->addOption(CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-        }
+    public function timeout($time = 30)
+    {
+        $this->opt['timeout'] = $time;
 
-
-        if (!empty($this->opt['cookie'])) {
-            $this->addOption(CURLOPT_COOKIE, $this->opt['cookie']);
-        } else {
-            if (empty($this->opt['cookie_file'])) {
-                $this->opt['cookie_file'] = __DIR__ . '/cookie.txt';
-                file_put_contents($this->opt['cookie_file'], '');
-            }
-
-            $this->addOption(CURLOPT_COOKIEFILE, $this->opt['cookie_file'])
-                ->addOption(CURLOPT_COOKIEJAR, $this->opt['cookie_file']);
-        }
+        return $this;
     }
 
     public function getAgent()
@@ -160,79 +156,148 @@ class HttpClient
         return $this->opt['agent'];
     }
 
-    public function init()
-    {
-        curl_reset($this->ch);
-        $this->cleanOpt();
-        return $this;
-    }
-
-    public function addHeader($header)
+    public function setHeader($header)
     {
         array_push($this->header, $header);
         return $this;
     }
 
-    public function addOption($opt, $value)
+    public function debugRequest()
     {
 
-        if (!is_null($value)) {
-
-            curl_setopt($this->ch, $opt, $value);
-        }
+        $this->opt['debug_request'] = true;
         return $this;
     }
 
-
-    public function responseHeader($body = false)
-    {
-        return $this->addOption(CURLOPT_NOBODY, !$body)
-            ->addOption(CURLOPT_HEADER, true);
-    }
-
-    public function follow()
-    {
-        return $this->addOption(CURLOPT_FOLLOWLOCATION, true);
-    }
-
-    public function timeout($time = 30)
-    {
-        return $this->addOption(CURLOPT_TIMEOUT, $time);
-    }
-
-
     public function get($url)
     {
-        $this->addOption(CURLOPT_HTTPHEADER, $this->header);
-        $this->header = [];
+        $this->ch = curl_init();
 
-        $this->addOption(CURLOPT_URL, $url);
+        $this->opt['http_header'] = $this->header;
+
+        $file = null;
+
+        curl_setopt($this->ch, CURLOPT_URL, $url);
+
+        foreach ($this->opt as $key => $value) {
+
+            if (!is_null($value)) {
+
+                switch ($key) {
+                    case 'debug_request':
+                        $file = fopen(__DIR__ . '/request.txt', 'w');
+                        curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+                        curl_setopt($this->ch, CURLOPT_STDERR, $file);
+                        break;
+                    case 'agent':
+                        curl_setopt($this->ch, CURLOPT_USERAGENT, $value);
+                        break;
+                    case 'http_header':
+                        curl_setopt($this->ch, CURLOPT_HTTPHEADER, $value);
+                        break;
+                    case 'follow_location':
+                        curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, $value);
+                        break;
+
+                    case 'cookie':
+                        curl_setopt($this->ch, CURLOPT_COOKIE, $value);
+                        break;
+
+                    case 'cookie_file':
+                        if ($value == 'default') {
+                            $value = __DIR__ . '/cookie.txt';
+                            file_put_contents($value, '');
+                        }
+                        curl_setopt($this->ch, CURLOPT_COOKIEFILE, $value);
+                        curl_setopt($this->ch, CURLOPT_COOKIEJAR, $value);
+                        break;
 
 
-//        $f = fopen(__DIR__ . '/request.txt', 'w');
-//        $this->addOption(CURLOPT_VERBOSE, true)
-//            ->addOption(CURLOPT_STDERR, $f);
+                    case 'verify_host':
+                        curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, $value);
+                        break;
+                    case 'verify_peer':
+                        curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, $value);
+                        break;
 
+                    case 'proxy_type':
+                        if ($value == 'sock') {
+                            curl_setopt($this->ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                        }
+                        break;
+                    case 'proxy':
+                        curl_setopt($this->ch, CURLOPT_PROXY, $value);
+                        break;
+                    case 'proxy_user_pwd':
+                        curl_setopt($this->ch, CURLOPT_PROXYUSERPWD, $value);
+                        break;
+
+
+                    case 'timeout':
+                        curl_setopt($this->ch, CURLOPT_TIMEOUT, $value);
+                        break;
+
+                    case 'return_transfer':
+                        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, $value);
+                        break;
+                    case 'header':
+                        curl_setopt($this->ch, CURLOPT_HEADER, $value);
+                        break;
+                    case 'nobody':
+                        curl_setopt($this->ch, CURLOPT_NOBODY, $value);
+                        break;
+
+                    case 'post':
+                        curl_setopt($this->ch, CURLOPT_POST, $value);
+                        break;
+
+                    case 'post_fields':
+                        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $value);
+                        break;
+
+                    case 'custom_request':
+                        curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $value);
+                        break;
+                }
+            }
+        }
         $result = curl_exec($this->ch);
 
-//        fclose($f);
+        $this->current_url = curl_getinfo($this->ch, CURLINFO_EFFECTIVE_URL);
 
-        return $result;
+        $this->status_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+
+        curl_close($this->ch);
+
+        $this->opt = $this->default_opt;
+
+        $this->header = [];
+
+        if (!empty($file)) {
+
+            fclose($file);
+
+            return file_get_contents(__DIR__ . '/request.txt', 'w');
+
+        } else {
+            return $result;
+        }
+
     }
 
-    public function post($url, $data, $build = true)
+    public function post($url, $data = [], $build = true)
     {
 
-        $this->addOption(CURLOPT_POST, 1)
-            ->addOption(CURLOPT_POSTFIELDS, $build ? http_build_query($data) : $data)
-            ->addOption(CURLOPT_URL, $url);
+        $this->opt['post'] = 1;
+        $this->opt['post_fields'] = $build ? http_build_query($data) : $data;
 
         return $this->get($url);
     }
 
-    public function put($url, $data, $build = true)
+    public function put($url, $data = [], $build = true)
     {
-        return $this->addOption(CURLOPT_CUSTOMREQUEST, 'PUT')
-            ->post($url, $data, $build);
+        $this->opt['custom_request'] = 'PUT';
+
+        return $this->post($url, $data, $build);
     }
 }

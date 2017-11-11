@@ -2,7 +2,7 @@
 namespace Toda\Validation;
 
 
-class Validate
+class Validate extends \Phalcon\Mvc\User\Plugin
 {
     public static function required($name, $value, $param)
     {
@@ -24,7 +24,7 @@ class Validate
             $query = $params[0]::where($name, $value);
 
             if (!empty($params[1])) {
-                $query->andWhere('id', '!=', $params[1]);
+                $query->andWhere($name, '!=', $params[1]);
             }
 
             if ($query->first()) {

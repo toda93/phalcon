@@ -1,7 +1,7 @@
 <?php
 namespace Toda\Html;
 
-class Pagination
+class Pagination extends \Phalcon\Mvc\User\Plugin
 {
     private static $options = [
         'current' => 1,

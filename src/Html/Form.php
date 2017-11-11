@@ -1,7 +1,7 @@
 <?php
 namespace Toda\Html;
 
-class Form
+class Form extends \Phalcon\Mvc\User\Plugin
 {
 
     private $old;
@@ -12,9 +12,13 @@ class Form
     private $opts;
     private $html = '';
 
-    public function __construct($old)
+    public function __construct()
     {
-        $this->old = $old;
+        $this->old = null;
+        if ($this->getDI()->getSession()->has('old')) {
+            $this->old = $this->getDI()->getSession()->get('old');
+            $this->getDI()->getSession()->remove('old');
+        }
     }
 
     public function __toString()
@@ -34,7 +38,13 @@ class Form
     {
         $option = '';
         foreach ($options as $key => $value) {
-            $option .= " $key='$value' ";
+
+            if (is_null($value)) {
+                $option .= " $key";
+            } else {
+                $option .= " $key='$value'";
+            }
+
         }
         return $option;
     }
@@ -42,18 +52,17 @@ class Form
     protected function buildValue()
     {
         $name = ($this->name);
-        return empty($this->old->$name) ? $this->value : $this->old->$name;
+        return empty($this->old[$name]) ? $this->value : $this->old[$name];
     }
 
-
-    public static function begin($old, array $options = [])
+    public static function begin(array $options = [])
     {
         echo "<form" . self::buildOption($options) . ">";
 
         if (!empty($options['method'])) {
-            echo "<input type='hidden' name='_csrf' value='" . csrf_token() . "' >";
+            echo "<input type='hidden' name='_csrf' value='" . \Phalcon\DI::getDefault()->getSession()->get('csrf_token') . "'>";
         }
-        return new self($old);
+        return new self();
     }
 
     public static function end()
@@ -79,56 +88,56 @@ class Form
     public function hidden(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='hidden' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='hidden' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function email(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='email' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='email' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function password(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='password' name='{$this->name}' {options}>";
+        $this->html = "<input type='password' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function text(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='text' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='text' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function url(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='url' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='url' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function number(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='number' name='{$this->name}' {options} value='{value}'>";
+        $this->html = "<input type='number' name='{$this->name}'{options} value='{value}'>";
         return $this;
     }
 
     public function file(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<input type='file' name='{$this->name}' {options}>";
+        $this->html = "<input type='file' name='{$this->name}'{options}>";
         return $this;
     }
 
     public function select(array $values, array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<select name='{$this->name}' {options}>";
+        $this->html = "<select name='{$this->name}'{options}>";
 
         $temp = $this->buildValue();
 
@@ -143,7 +152,6 @@ class Form
         $this->html .= "</select>";
         return $this;
     }
-
 
     public function checkboxList(array $values, array $options = array())
     {
@@ -200,7 +208,8 @@ class Form
 
         $temp = $this->buildValue();
 
-        $this->html = "<input type='checkbox' name='{$this->name}' {options} value='$value'";
+        $this->html = "<input type='checkbox' name='{$this->name}'{options} value='$value'";
+
         if ($temp === (string)$value) {
             $this->html .= ' checked';
         }
@@ -212,17 +221,15 @@ class Form
     public function textarea(array $options = [])
     {
         $this->opts = $options;
-        $this->html = "<textarea name='{$this->name}' {options}>{value}</textarea>";
+        $this->html = "<textarea name='{$this->name}'{options}>{value}</textarea>";
         return $this;
     }
 
-    public function captcha(array $options = [])
+    public function recaptcha($recaptcha_key, array $options = [])
     {
-        $di = \Phalcon\DI::getDefault();
-
         $this->name = 'captcha';
         $this->opts = $options;
-        $this->html = "<div class='g-recaptcha' data-sitekey='" . $di->get('config')->recaptcha_key . "' {options}></div>";
+        $this->html = "<script src='https://www.google.com/recaptcha/api.js'></script><div class='g-recaptcha' data-sitekey='$recaptcha_key' {options}></div>";
         return $this;
     }
 }

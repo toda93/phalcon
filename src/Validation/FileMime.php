@@ -1,7 +1,7 @@
 <?php
 namespace Toda\Validation;
 
-class FileMime
+class FileMime extends \Phalcon\Mvc\User\Plugin
 {
 
     protected static $default_extension = array(

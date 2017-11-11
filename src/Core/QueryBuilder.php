@@ -343,6 +343,16 @@ class QueryBuilder
         return $this->builder->getQuery()->execute();
     }
 
+    public function getArray($key, $value)
+    {
+        $data = $this->builder->getQuery()->execute();
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->$key] = $item->$value;
+        }
+        return $result;
+    }
+
     public function first()
     {
         return $this->builder->limit(1)->getQuery()->getSingleResult();
@@ -394,7 +404,8 @@ class QueryBuilder
         return $obj->getWriteConnection()->query($query);
     }
 
-    public  function updateAll(){
+    public function updateAll()
+    {
         echo $this->builder->getFrom();
     }
 

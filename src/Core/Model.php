@@ -8,15 +8,20 @@ class Model extends \Phalcon\Mvc\Model
     protected $track_time = false;
     protected $track_user = false;
 
-    public function initialize()
-    {
-
-    }
-
-    public function setConnection($name)
+    protected function setConnection($name)
     {
         $this->setConnectionService($name);
         $this->setSchema($name);
+    }
+
+    protected function setReadConnection($name)
+    {
+        $this->setReadConnectionService($name);
+    }
+
+    protected function  setWriteConnection($name)
+    {
+        $this->setWriteConnectionService($name);
     }
 
     public static function __callStatic($method, $parameters)
