@@ -17,16 +17,16 @@ class CacheManager
 
     public function remember($name, $time = 60, $callback = false, $use = true)
     {
-        $result = $this->get($name, $time);
+        $result = $use && !$this->debug ? $this->get($name, $time) : null;
 
-        if (empty($result)) {
+        if (empty($result) || $this->debug) {
             if (is_callable($callback)) {
                 $result = call_user_func($callback);
 
             } else {
                 $result = $callback;
             }
-            if ($use && !$this->debug) {
+            if ($use) {
                 $this->set($name, $result, $time);
             }
         }
