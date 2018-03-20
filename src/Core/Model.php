@@ -5,9 +5,6 @@ namespace Toda\Core;
 
 class Model extends \Phalcon\Mvc\Model
 {
-    protected $track_time = false;
-    protected $track_user = false;
-
     protected function setConnection($name)
     {
         $this->setConnectionService($name);
@@ -41,29 +38,42 @@ class Model extends \Phalcon\Mvc\Model
 
     public function beforeCreate()
     {
-        if ($this->track_time) {
-            $this->created_at = $this->updated_at = time();
+
+        if (property_exists($this, 'created_at')) {
+            $this->created_at = time();
         }
-        if ($this->track_user) {
+        if (property_exists($this, 'created_id')) {
             if (empty($this->getDI()->getSession()->get('auth'))) {
-                $this->created_id = $this->updated_id = 1;
+                $this->created_id = 1;
             } else {
-                $this->created_id = $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+                $this->created_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
+
+        $this->beforeUpdate();
     }
 
     public function beforeUpdate()
     {
-        if ($this->track_time) {
+        if (property_exists($this, 'updated_at')) {
             $this->updated_at = time();
         }
-        if ($this->track_user) {
+        if (property_exists($this, 'updated_id')) {
             if (empty($this->getDI()->getSession()->get('auth'))) {
                 $this->updated_id = 1;
             } else {
                 $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
+    }
+
+    public function delete($force = false)
+    {
+        if (!$force && (property_exists($this, 'deleted_at') && property_exists($this, 'deleted_id'))) {
+            $this->deleted_at = time();
+            $this->deleted_id = $this->getDI()->getSession()->get('auth')->id;
+            return $this->save();
+        }
+        return parent::delete();
     }
 }
