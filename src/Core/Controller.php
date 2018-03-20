@@ -201,7 +201,7 @@ class Controller extends ControllerRoot
 
     public function loadRequest($model, $request, $guard = [])
     {
-        $guard[] = ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id'];
+        $guard = array_merge($guard, ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id']);
 
         foreach ($request as $key => $value) {
 
