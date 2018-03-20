@@ -55,10 +55,10 @@ class Model extends \Phalcon\Mvc\Model
 
     public function beforeUpdate()
     {
-        if (property_exists($this, 'updated_at')) {
+        if (property_exists($this, 'updated_at') && $this->status != -1) {
             $this->updated_at = time();
         }
-        if (property_exists($this, 'updated_id')) {
+        if (property_exists($this, 'updated_id') && $this->status != -1) {
             if (empty($this->getDI()->getSession()->get('auth'))) {
                 $this->updated_id = 1;
             } else {
@@ -69,7 +69,8 @@ class Model extends \Phalcon\Mvc\Model
 
     public function delete($force = false)
     {
-        if (!$force && (property_exists($this, 'deleted_at') && property_exists($this, 'deleted_id'))) {
+        if (!$force && (property_exists($this, 'status') && property_exists($this, 'deleted_at') && property_exists($this, 'deleted_id'))) {
+            $this->status = -1;
             $this->deleted_at = time();
             $this->deleted_id = $this->getDI()->getSession()->get('auth')->id;
             return $this->save();

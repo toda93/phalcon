@@ -29,16 +29,21 @@ class QueryBuilder
 
     public function where($column, $operator = null, $value = null)
     {
-        if (is_null($operator)) {
-            $this->builder->where($column);
+        if (preg_match('/WHERE/i', $this->builder->getPhql())) {
+            return $this->andWhere($column, $operator, $value);
         } else {
-            if (is_null($value)) {
-                $value = $operator;
-                $operator = '=';
+            if (is_null($operator)) {
+                $this->builder->where($column);
+            } else {
+                if (is_null($value)) {
+                    $value = $operator;
+                    $operator = '=';
+                }
+                $this->builder->where("$column $operator :B{$this->countBind}:", array('B' . $this->countBind++ => $value));
             }
-            $this->builder->where("$column $operator :B{$this->countBind}:", array('B' . $this->countBind++ => $value));
+            return $this;
         }
-        return $this;
+
     }
 
     public function whereNull($column)
@@ -107,7 +112,7 @@ class QueryBuilder
     {
 
         if (is_null($operator)) {
-            $this->builder->where($column);
+            $this->builder->andWhere($column);
         } else {
             if (is_null($value)) {
                 $value = $operator;
