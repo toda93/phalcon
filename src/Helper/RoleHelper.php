@@ -6,7 +6,7 @@ class RoleHelper
     {
         $auth = \Phalcon\DI::getDefault()->getSession()->get('auth');
 
-        return $auth->level == 1 || preg_match("/$key/", $auth->roles);
+        return $auth->level == 0 || preg_match("/$key/", $auth->roles);
     }
 
 }
