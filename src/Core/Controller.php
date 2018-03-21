@@ -33,11 +33,20 @@ class Controller extends ControllerRoot
     {
         $params = explode(':', $middleware);
 
-        $run = (preg_match('/' . $this->dispatcher->getActionName() . '/', reset($options)));
 
-        if (($run && key($options) === 'only') || (!$run && key($options) !== 'only')) {
+        if (empty($options)) {
+            $run = true;
+        } else {
+            if (!empty($options['only'] && in_array($this->dispatcher->getActionName(), $options['only']))) {
+                $run = true;
+            }
+            if (!empty($options['except'] && !in_array($this->dispatcher->getActionName(), $options['except']))) {
+                $run = true;
+            }
+        }
+
+        if ($run) {
             $name = $params[0] . 'Middleware';
-
             $this->$name(empty($params[1]) ? null : $params[1]);
         }
     }
@@ -208,7 +217,7 @@ class Controller extends ControllerRoot
 
     public function loadRequest($model, $request, $guard = [])
     {
-        $guardarray_merge($guard, ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id']);;
+        $guard = array_merge($guard, ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id']);;
 
         foreach ($request as $key => $value) {
 
