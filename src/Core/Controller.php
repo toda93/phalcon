@@ -109,11 +109,18 @@ class Controller extends ControllerRoot
     {
         $error_messages = [];
 
-        $arr_check = array_map('trim', $this->request->get());
+        $arr_check = $overwrite;
 
-        $arr_check = array_merge($arr_check, $overwrite);
+        foreach ($this->request->get() as $key => $item) {
 
-        $arr_check = array_map('htmlspecialchars', $arr_check);
+            if (!isset($arr_check[$key])) {
+                if (is_array($item)) {
+                    $arr_check[$key] = array_map('htmlspecialchars', array_map('trim', $item));
+                } else {
+                    $arr_check[$key] = htmlspecialchars(trim($item));
+                }
+            }
+        }
 
         if ($this->request->hasFiles() == true) {
             foreach ($this->request->getUploadedFiles() as $file) {
@@ -201,7 +208,7 @@ class Controller extends ControllerRoot
 
     public function loadRequest($model, $request, $guard = [])
     {
-        $guard = array_merge($guard, ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id']);
+        $guardarray_merge($guard, ['id', 'status', 'created_at', 'updated_at', 'deleted_at', 'created_id', 'updated_id', 'deleted_id']);;
 
         foreach ($request as $key => $value) {
 

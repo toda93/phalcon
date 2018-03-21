@@ -155,25 +155,32 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
     public function checkboxList(array $values, array $options = array())
     {
+        $parent_class = 'checkbox-inline';
+        if (!empty($options['parent-class'])) {
+            $parent_class = $options['parent-class'];
+            unset($options['parent-class']);
+        }
+
         $temp = $this->buildValue();
 
-        if (isset($options['checkbox-type']) && $options['checkbox-type'] == 'json') {
-            unset($options['checkbox-type']);
+        if (!is_array($temp)) {
+            if ($options['checkbox-type'] == 'json') {
+                unset($options['checkbox-type']);
 
-            $temp = json_decode($temp, true);
-        } else {
-            $temp = explode(',', $temp);
+                $temp = json_decode($temp, true);
+            } else {
+
+                $temp = explode(',', $temp);
+            }
         }
 
         $this->opts = $options;
 
-
         $this->html = "";
-
 
         foreach ($values as $key => $value) {
 
-            $this->html .= "<span class='checkbox-inline'><input type='checkbox' name='{$this->name}[]' value='$key'";
+            $this->html .= "<span class='$parent_class'><input type='checkbox' name='{$this->name}[]' value='$key'";
 
             if (in_array($key, $temp)) {
                 $this->html .= ' checked';
@@ -185,6 +192,13 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
     public function radioList(array $values, array $options = array())
     {
+        $parent_class = 'radio-inline';
+        if (!empty($options['parent-class'])) {
+            $parent_class = 'parent-class';
+            unset($options['parent-class']);
+        }
+
+
         $this->opts = $options;
         $temp = $this->buildValue();
 
@@ -192,7 +206,7 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
         foreach ($values as $key => $value) {
 
-            $this->html .= "<span class='radio-inline'><input type='radio' name='{$this->name}' value='$key'";
+            $this->html .= "<span class='$parent_class'><input type='radio' name='{$this->name}' value='$key'";
 
             if ($temp == $key) {
                 $this->html .= ' checked';
