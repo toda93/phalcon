@@ -164,7 +164,7 @@ class Form extends \Phalcon\Mvc\User\Plugin
         $temp = $this->buildValue();
 
         if (!is_array($temp)) {
-            if ($options['checkbox-type'] == 'json') {
+            if (!empty($options['checkbox-type']) && $options['checkbox-type'] == 'json') {
                 unset($options['checkbox-type']);
 
                 $temp = json_decode($temp, true);
