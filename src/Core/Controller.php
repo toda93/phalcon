@@ -3,8 +3,10 @@ namespace Toda\Core;
 
 use Phalcon\Mvc\Controller as ControllerRoot;
 use Phalcon\Mvc\View;
+use Phalcon\Mvc\Dispatcher;
 use Toda\Client\HttpClient;
 use Toda\Validation\ErrorMessage;
+
 
 class Controller extends ControllerRoot
 {
@@ -26,6 +28,15 @@ class Controller extends ControllerRoot
         ]);
 
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
+    }
+
+    public function beforeExecuteRoute(Dispatcher $dispatcher)
+    {
+        $this->beforeAction();
+    }
+
+    protected function beforeAction()
+    {
     }
 
     protected function middleware($middleware, array $options = [])
