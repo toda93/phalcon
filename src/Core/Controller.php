@@ -114,7 +114,7 @@ class Controller extends ControllerRoot
 
     }
 
-    protected function validate(array $fields, $overwrite = [])
+    protected function validateRequest(array $fields, $overwrite = [])
     {
 
         $error_messages = [];
