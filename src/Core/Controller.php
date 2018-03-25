@@ -5,7 +5,6 @@ use Phalcon\Mvc\Controller as ControllerRoot;
 use Phalcon\Mvc\View;
 use Toda\Client\HttpClient;
 use Toda\Validation\ErrorMessage;
-use Toda\Validation\Validate;
 
 class Controller extends ControllerRoot
 {
@@ -33,14 +32,15 @@ class Controller extends ControllerRoot
     {
         $params = explode(':', $middleware);
 
-
+        $run = false;
         if (empty($options)) {
             $run = true;
         } else {
-            if (!empty($options['only'] && in_array($this->dispatcher->getActionName(), $options['only']))) {
+            if (!empty($options['only']) && in_array($this->dispatcher->getActionName(), $options['only'])) {
                 $run = true;
             }
-            if (!empty($options['except'] && !in_array($this->dispatcher->getActionName(), $options['except']))) {
+
+            if (!empty($options['except']) && !in_array($this->dispatcher->getActionName(), $options['except'])) {
                 $run = true;
             }
         }
@@ -114,19 +114,22 @@ class Controller extends ControllerRoot
 
     }
 
-    protected function validate(array $conditions, $overwrite = [])
+    protected function validate(array $fields, $overwrite = [])
     {
+
         $error_messages = [];
 
-        $arr_check = $overwrite;
+        $request = $overwrite;
 
+        /* Load request*/
         foreach ($this->request->get() as $key => $item) {
-
-            if (!isset($arr_check[$key])) {
-                if (is_array($item)) {
-                    $arr_check[$key] = array_map('htmlspecialchars', array_map('trim', $item));
-                } else {
-                    $arr_check[$key] = htmlspecialchars(trim($item));
+            if ($key != '_url' && $key != '_csrf') {
+                if (!isset($request[$key])) {
+                    if (is_array($item)) {
+                        $request[$key] = array_map('htmlspecialchars', array_map('trim', $item));
+                    } else {
+                        $request[$key] = htmlspecialchars(trim($item));
+                    }
                 }
             }
         }
@@ -135,45 +138,90 @@ class Controller extends ControllerRoot
             foreach ($this->request->getUploadedFiles() as $file) {
 
                 if ($file->getSize() != 0) {
-                    $arr_check[$file->getKey()] = $file;
+                    $request[$file->getKey()] = $file;
                 }
             }
         }
+        /*End load request*/
 
-        $valid = true;
+        foreach ($fields as $item) {
 
-        foreach ($conditions as $key => $condition) {
+            $conditions = explode('|', $item['value']);
+            $value_check = $request[$item['key']];
+            $field_name = $item['name'];
 
-            $arr_condition = explode('|', $condition);
+            foreach ($conditions as $condition) {
 
-            foreach ($arr_condition as $item) {
+                $condition = explode(':', $condition, 2);
+                $method = $condition[0];
+                $param = empty($condition[1]) ? '' : $condition[1];
 
-                $params = explode(':', $item, 2);
-                $method = $params[0];
-                $param = empty($params[1]) ? '' : $params[1];
-
-                if ($method == 'file') {
-                    if (is_object($arr_check[$key])) {
-                        $message = Validate::$method($key, $arr_check[$key]->getType(), $param);
+                if ($method == 'required') {
+                    if (is_null($value_check) || $value_check == '') {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                     }
-                } else {
-                    $message = Validate::$method($key, $arr_check[$key], $param);
-                }
-
-                if (!empty($message)) {
-
-                    if (!is_string($arr_check[$key])) {
-                        $arr_check[$key] = '';
+                } else if ($method == 'email') {
+                    if (!empty($value_check) && !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value_check)) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                     }
+                } else if ($method == 'number') {
+                    if (!empty($value_check) && !preg_match('/^[-]?[0-9]*\.?[0-9]+$/', $value_check)) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                    }
+                } else if ($method == 'regex') {
+                    if (!empty($value_check) && !preg_match($param, $value_check)) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                    }
+                } else if ($method == 'min') {
 
-                    $valid = false;
-                    $error_messages[$key] = $message;
-                    break;
+                    if (!is_null($value_check) && floatval($value_check) <= floatval($param)) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                    }
+                } else if ($method == 'max') {
+                    if (!is_null($value_check) && floatval($value_check) >= floatval($param)) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                    }
+                } else if ($method == 'min_length') {
+                    if (!empty($value_check) && strlen($value_check) <= $param) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                    }
+                } else if ($method == 'max_length') {
+                    if (!empty($value_check) && strlen($value_check) >= $param) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                    }
+                } else if ($method == 'confirmed') {
+                    if (!empty($value_check) && $value_check !== $param) {
+                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                    }
+                } else if ($method == 'unique') {
+
+                    if (!empty($value_check)) {
+                        $params = explode(',', $param);
+
+                        $query = $params[0]::where($item['key'], $value_check);
+
+                        if (!empty($params[1])) {
+                            $query->andWhere($item['key'], '!=', $params[1]);
+                        }
+
+                        if ($query->first()) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                        }
+                    }
+                } else if ($method == 'file') {
+                    if (is_object($value_check)) {
+
+                        $result = FileMime::checkExtenstion($value_check, $param);
+
+                        if ($result['status'] == 1) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                        }
+                    }
                 }
             }
         }
-        if (!$valid) {
-            $this->session->set('old', $arr_check);
+        if (!empty($error_messages)) {
+            $this->session->set('old', $request);
 
             if ($this->request->isAjax()) {
                 return $this->json($error_messages);
@@ -182,8 +230,9 @@ class Controller extends ControllerRoot
                 return $this->back();
             }
         }
-        return $arr_check;
+        return $request;
     }
+
 
     protected function verifyRecaptcha()
     {
