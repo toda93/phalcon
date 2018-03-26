@@ -43,9 +43,9 @@ class Model extends \Phalcon\Mvc\Model
             $this->created_at = time();
         }
         if (property_exists($this, 'created_id')) {
-            if (empty($this->getDI()->getSession()->get('auth'))) {
-                $this->created_id = 1;
-            } else {
+
+            $this->created_id = 1;
+            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
                 $this->created_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
@@ -58,10 +58,11 @@ class Model extends \Phalcon\Mvc\Model
         if (property_exists($this, 'updated_at') && $this->status != -1) {
             $this->updated_at = time();
         }
+
         if (property_exists($this, 'updated_id') && $this->status != -1) {
-            if (empty($this->getDI()->getSession()->get('auth'))) {
-                $this->updated_id = 1;
-            } else {
+            $this->updated_id = 1;
+
+            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
                 $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
@@ -72,7 +73,12 @@ class Model extends \Phalcon\Mvc\Model
         if (!$force && (property_exists($this, 'status') && property_exists($this, 'deleted_at') && property_exists($this, 'deleted_id'))) {
             $this->status = -1;
             $this->deleted_at = time();
-            $this->deleted_id = $this->getDI()->getSession()->get('auth')->id;
+
+            $this->updated_id = 1;
+
+            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
+                $this->deleted_id = $this->getDI()->getSession()->get('auth')->id;
+            }
             return $this->save();
         }
         return parent::delete();
