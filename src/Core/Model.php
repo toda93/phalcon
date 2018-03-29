@@ -67,20 +67,4 @@ class Model extends \Phalcon\Mvc\Model
             }
         }
     }
-
-    public function delete($force = false)
-    {
-        if (!$force && (property_exists($this, 'status') && property_exists($this, 'deleted_at') && property_exists($this, 'deleted_id'))) {
-            $this->status = -1;
-            $this->deleted_at = time();
-
-            $this->updated_id = 1;
-
-            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
-                $this->deleted_id = $this->getDI()->getSession()->get('auth')->id;
-            }
-            return $this->save();
-        }
-        return parent::delete();
-    }
 }
