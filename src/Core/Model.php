@@ -44,8 +44,8 @@ class Model extends \Phalcon\Mvc\Model
         }
         if (property_exists($this, 'created_id')) {
 
-            $this->created_id = 1;
-            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
+            $session = $this->getDI()->getSession();
+            if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
                 $this->created_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
@@ -55,6 +55,7 @@ class Model extends \Phalcon\Mvc\Model
 
     public function beforeUpdate()
     {
+
         if (property_exists($this, 'updated_at') && $this->status != -1) {
             $this->updated_at = time();
         }
@@ -62,7 +63,8 @@ class Model extends \Phalcon\Mvc\Model
         if (property_exists($this, 'updated_id') && $this->status != -1) {
             $this->updated_id = 1;
 
-            if ($this->getDI()->getSession()->isStarted() && empty($this->getDI()->getSession()->get('auth'))) {
+            $session = $this->getDI()->getSession();
+            if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
                 $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
             }
         }
