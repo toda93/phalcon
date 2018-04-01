@@ -29,13 +29,6 @@ class Model extends \Phalcon\Mvc\Model
         return call_user_func_array([$builder, $method], $parameters);
     }
 
-    public function disableTrack($time = false, $user = false)
-    {
-        $this->track_time = $time;
-        $this->track_user = $user;
-        return $this;
-    }
-
     public function beforeCreate()
     {
 
@@ -56,11 +49,11 @@ class Model extends \Phalcon\Mvc\Model
     public function beforeUpdate()
     {
 
-        if (property_exists($this, 'updated_at') && $this->status != -1) {
+        if (property_exists($this, 'updated_at')) {
             $this->updated_at = time();
         }
 
-        if (property_exists($this, 'updated_id') && $this->status != -1) {
+        if (property_exists($this, 'updated_id')) {
             $this->updated_id = 1;
 
             $session = $this->getDI()->getSession();

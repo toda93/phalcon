@@ -2,10 +2,11 @@
 namespace Toda\Core;
 
 use Phalcon\Mvc\Controller as ControllerRoot;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Dispatcher;
+use Phalcon\Mvc\View;
 use Toda\Client\HttpClient;
 use Toda\Validation\ErrorMessage;
+use Toda\Validation\FileMime;
 
 
 class Controller extends ControllerRoot
@@ -219,12 +220,23 @@ class Controller extends ControllerRoot
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
                     }
+                } else if ($method == 'image') {
+                    if (is_object($value_check)) {
+
+
+                        $result = FileMime::checkExtenstion($value_check->getType(), 'png,jpeg,gif');
+
+
+                        if ($result['status'] == 0) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $value_check->getType());
+                        }
+                    }
                 } else if ($method == 'file') {
                     if (is_object($value_check)) {
 
                         $result = FileMime::checkExtenstion($value_check, $param);
 
-                        if ($result['status'] == 1) {
+                        if ($result['status'] == 0) {
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
                     }

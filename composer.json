@@ -13,7 +13,8 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.9",
-    "swiftmailer/swiftmailer": "~5.2"
+    "swiftmailer/swiftmailer": "~5.2",
+    "intervention/image": "^2.3"
   },
   "require-dev": {
 

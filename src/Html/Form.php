@@ -134,6 +134,13 @@ class Form extends \Phalcon\Mvc\User\Plugin
         return $this;
     }
 
+    public function image(array $options = [])
+    {
+        $this->opts = $options;
+        $this->html = "<input type='file' name='{$this->name}'{options} data-url='{value}'>";
+        return $this;
+    }
+
     public function select(array $values, array $options = [])
     {
         $this->opts = $options;
@@ -224,7 +231,7 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
         $this->html = "<input type='checkbox' name='{$this->name}'{options} value='$value'";
 
-        if ($temp === (string)$value) {
+        if ((string)$temp === (string)$value) {
             $this->html .= ' checked';
         }
         $this->html .= ">";
