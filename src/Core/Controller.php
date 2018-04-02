@@ -156,10 +156,12 @@ class Controller extends ControllerRoot
         }
         /*End load request*/
 
+
         foreach ($fields as $item) {
 
             $conditions = explode('|', $item['value']);
-            $value_check = $request[$item['key']];
+
+            $value_check = empty($request[$item['key']]) ? '' : $request[$item['key']];
             $field_name = $item['name'];
 
             foreach ($conditions as $condition) {
@@ -168,75 +170,81 @@ class Controller extends ControllerRoot
                 $method = $condition[0];
                 $param = empty($condition[1]) ? '' : $condition[1];
 
-                if ($method == 'required') {
-                    if (is_null($value_check) || $value_check == '') {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
-                    }
-                } else if ($method == 'email') {
-                    if (!empty($value_check) && !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value_check)) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
-                    }
-                } else if ($method == 'number') {
-                    if (!empty($value_check) && !preg_match('/^[-]?[0-9]*\.?[0-9]+$/', $value_check)) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
-                    }
-                } else if ($method == 'regex') {
-                    if (!empty($value_check) && !preg_match($param, $value_check)) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
-                    }
-                } else if ($method == 'min') {
-
-                    if (!is_null($value_check) && floatval($value_check) <= floatval($param)) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
-                    }
-                } else if ($method == 'max') {
-                    if (!is_null($value_check) && floatval($value_check) >= floatval($param)) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
-                    }
-                } else if ($method == 'min_length') {
-                    if (!empty($value_check) && strlen($value_check) <= $param) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
-                    }
-                } else if ($method == 'max_length') {
-                    if (!empty($value_check) && strlen($value_check) >= $param) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
-                    }
-                } else if ($method == 'confirmed') {
-                    if (!empty($value_check) && $value_check !== $param) {
-                        $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
-                    }
-                } else if ($method == 'unique') {
-
-                    if (!empty($value_check)) {
-                        $params = explode(',', $param);
-
-                        $query = $params[0]::where($item['key'], $value_check);
-
-                        if (!empty($params[1])) {
-                            $query->andWhere($item['key'], '!=', $params[1]);
-                        }
-
-                        if ($query->first()) {
+                if (!is_object($value_check)) {
+                    if ($method == 'required') {
+                        if (is_null($value_check) || $value_check == '') {
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
-                    }
-                } else if ($method == 'image') {
-                    if (is_object($value_check)) {
+                    } else if ($method == 'email') {
+                        if (!empty($value_check) && !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/', $value_check)) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                        }
+                    } else if ($method == 'number') {
+                        if (!empty($value_check) && !preg_match('/^[-]?[0-9]*\.?[0-9]+$/', $value_check)) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                        }
+                    } else if ($method == 'regex') {
+                        if (!empty($value_check) && !preg_match($param, $value_check)) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                        }
+                    } else if ($method == 'min') {
 
+                        if (!is_null($value_check) && floatval($value_check) <= floatval($param)) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                        }
+                    } else if ($method == 'max') {
+                        if (!is_null($value_check) && floatval($value_check) >= floatval($param)) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                        }
+                    } else if ($method == 'min_length') {
+                        if (!empty($value_check) && strlen($value_check) <= $param) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                        }
+                    } else if ($method == 'max_length') {
+                        if (!empty($value_check) && strlen($value_check) >= $param) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                        }
+                    } else if ($method == 'confirmed') {
+                        if (!empty($value_check) && $value_check !== $param) {
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $param);
+                        }
+                    } else if ($method == 'unique') {
 
-                        $result = FileMime::checkExtenstion($value_check->getType(), 'png,jpeg,gif');
+                        if (!empty($value_check)) {
+                            $params = explode(',', $param);
 
+                            $query = $params[0]::where($item['key'], $value_check);
 
-                        if ($result['status'] == 0) {
-                            $error_messages[] = sprintf($this->lang->get('validate', $method), $value_check->getType());
+                            if (!empty($params[1])) {
+                                $query->andWhere($item['key'], '!=', $params[1]);
+                            }
+
+                            if ($query->first()) {
+                                $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                            }
                         }
                     }
-                } else if ($method == 'file') {
-                    if (is_object($value_check)) {
+                } else {
+                    if ($method == 'size') {
 
+                        if ($value_check->getSize() > floatval($param)) {
+                            $request[$item['key']] = '';
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $value_check->getSize(), $param);
+                        }
+
+                    } else if ($method == 'image') {
+                        $result = FileMime::checkExtenstion($value_check->getType(), 'png,jpeg,gif');
+
+                        if ($result['status'] == 0) {
+                            $request[$item['key']] = '';
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $value_check->getType());
+                        }
+
+                    } else if ($method == 'file') {
                         $result = FileMime::checkExtenstion($value_check, $param);
 
                         if ($result['status'] == 0) {
+                            $request[$item['key']] = '';
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
                     }
