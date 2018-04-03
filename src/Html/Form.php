@@ -201,10 +201,9 @@ class Form extends \Phalcon\Mvc\User\Plugin
     {
         $parent_class = 'radio-inline';
         if (!empty($options['parent-class'])) {
-            $parent_class = 'parent-class';
+            $parent_class = $options['parent-class'];
             unset($options['parent-class']);
         }
-
 
         $this->opts = $options;
         $temp = $this->buildValue();
