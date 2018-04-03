@@ -11,6 +11,12 @@ class RoleHelper
 
             foreach ($array_regex as $regex) {
 
+                if(preg_match('/\./', $regex)){
+                    $regex = "\"$regex\"";
+                } else {
+                    $regex = "\"$regex\\.(.*?)\"";
+                }
+
                 if (preg_match("/$regex/", $auth->roles)) {
 
                     return true;
