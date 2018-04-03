@@ -187,12 +187,12 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
         foreach ($values as $key => $value) {
 
-            $this->html .= "<span class='$parent_class'><input type='checkbox' name='{$this->name}[]' value='$key'";
+            $this->html .= "<div class='$parent_class'><input type='checkbox' name='{$this->name}[]' value='$key'";
 
             if (in_array($key, $temp)) {
                 $this->html .= ' checked';
             }
-            $this->html .= "{options}> $value </span>";
+            $this->html .= "{options}> $value </div>";
         }
         return $this;
     }
@@ -213,12 +213,12 @@ class Form extends \Phalcon\Mvc\User\Plugin
 
         foreach ($values as $key => $value) {
 
-            $this->html .= "<span class='$parent_class'><input type='radio' name='{$this->name}' value='$key'";
+            $this->html .= "<div class='$parent_class'><input type='radio' name='{$this->name}' value='$key'";
 
             if ($temp == $key) {
                 $this->html .= ' checked';
             }
-            $this->html .= "{options}> $value </span>";
+            $this->html .= "{options}> $value </div>";
         }
         return $this;
     }
