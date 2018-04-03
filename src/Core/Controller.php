@@ -138,7 +138,7 @@ class Controller extends ControllerRoot
             if ($key != '_url' && $key != '_csrf') {
                 if (!isset($request[$key])) {
                     if (is_array($item)) {
-                        $request[$key] = array_map('htmlspecialchars', array_map('trim', $item));
+                        $request[$key] = array_map('htmlentities', array_map('trim', $item));
                     } else {
                         $request[$key] = htmlspecialchars(trim($item));
                     }
@@ -146,10 +146,12 @@ class Controller extends ControllerRoot
             }
         }
 
+        $file_keys = [];
         if ($this->request->hasFiles() == true) {
             foreach ($this->request->getUploadedFiles() as $file) {
 
                 if ($file->getSize() != 0) {
+                    $file_keys[] = $file->getKey();
                     $request[$file->getKey()] = $file;
                 }
             }
@@ -228,7 +230,6 @@ class Controller extends ControllerRoot
                     if ($method == 'size') {
 
                         if ($value_check->getSize() > floatval($param)) {
-                            $request[$item['key']] = '';
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name, $value_check->getSize(), $param);
                         }
 
@@ -236,7 +237,6 @@ class Controller extends ControllerRoot
                         $result = FileMime::checkExtenstion($value_check->getType(), 'png,jpeg,gif');
 
                         if ($result['status'] == 0) {
-                            $request[$item['key']] = '';
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $value_check->getType());
                         }
 
@@ -244,7 +244,6 @@ class Controller extends ControllerRoot
                         $result = FileMime::checkExtenstion($value_check, $param);
 
                         if ($result['status'] == 0) {
-                            $request[$item['key']] = '';
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
                     }
@@ -252,6 +251,12 @@ class Controller extends ControllerRoot
             }
         }
         if (!empty($error_messages)) {
+
+            foreach ($file_keys as $key) {
+                $request[$key] = null;
+            }
+
+
             $this->session->set('old', $request);
 
             if ($this->request->isAjax()) {
