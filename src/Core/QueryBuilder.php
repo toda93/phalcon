@@ -369,16 +369,35 @@ class QueryBuilder
         return $result->total;
     }
 
-    public function pagination($page = 1, $limit = 50)
+    public function pagination($page = 1, $limit = 50, $total = 99999999)
     {
-        $result = new \Phalcon\Paginator\Adapter\QueryBuilder(
-            array(
-                "builder" => $this->builder,
-                "limit" => $limit,
-                "page" => empty($page) ? 1 : $page,
-            )
-        );
-        return $result->getPaginate();
+        $obj = new \stdClass();
+        $obj->total_items = $total;
+        $obj->last = $obj->total_pages = (int)($total / $limit);
+        $obj->current = $page;
+        $obj->before = ($page > 1) ? $page - 1 : 1;
+        $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
+        $obj->items = $this->builder->getQuery()->execute();
+
+        return $obj;
+    }
+
+    public function paginationRaw($query, $page = 1, $limit = 50, $total = 99999999)
+    {
+        $query = preg_replace('/LIMIT(.*)/i', '', $query);
+        $count_query = preg_replace('/select(.*?)from(.*?)/i', 'SELECT COUNT(*) as total FROM', $query);
+
+        $query .= " LIMIT $limit OFFSET " . (($page - 1) * $limit);
+
+        $obj = new \stdClass();
+        $obj->total_items = $total;
+        $obj->last = $obj->total_pages = (int)($total / $limit);
+        $obj->current = $page;
+        $obj->before = ($page > 1) ? $page - 1 : 1;
+        $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
+        $obj->items = $this->selectRaw($query);
+
+        return $obj;
     }
 
     public function firstOrNew()
@@ -409,28 +428,5 @@ class QueryBuilder
         return $obj->getWriteConnection()->query($query);
     }
 
-    public function updateAll()
-    {
-        echo $this->builder->getFrom();
-    }
 
-    public function paginationRaw($query, $page = 1, $limit = 50)
-    {
-        $query = preg_replace('/LIMIT(.*)/i', '', $query);
-        $count_query = preg_replace('/select(.*?)from(.*?)/i', 'SELECT COUNT(*) as total FROM', $query);
-
-        $query .= " LIMIT $limit OFFSET " . (($page - 1) * $limit);
-
-        $total = $this->selectRaw($count_query)->toArray()[0]['total'];
-
-        $obj = new \stdClass();
-        $obj->total_items = $total;
-        $obj->last = $obj->total_pages = (int)($total / $limit);
-        $obj->current = $page;
-        $obj->before = ($page > 1) ? $page - 1 : 1;
-        $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
-        $obj->items = $this->selectRaw($query);
-
-        return $obj;
-    }
 }
