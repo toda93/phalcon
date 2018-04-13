@@ -377,7 +377,7 @@ class QueryBuilder
         $obj->current = $page;
         $obj->before = ($page > 1) ? $page - 1 : 1;
         $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
-        $obj->items = $this->builder->getQuery()->execute();
+        $obj->items = $this->limit($limit, (($page - 1) * $limit))->builder->getQuery()->execute();
 
         return $obj;
     }
