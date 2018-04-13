@@ -5,7 +5,7 @@ class RoleHelper
     public static function check($key)
     {
         $auth = \Phalcon\DI::getDefault()->getSession()->get('auth');
-        if ($auth->level != 0) {
+        if ($auth['user']->level != 0) {
 
             $array_regex = explode('|', $key);
 
@@ -17,7 +17,7 @@ class RoleHelper
                     $regex = "\"$regex\\.(.*?)\"";
                 }
 
-                if (preg_match("/$regex/", $auth->profile->roles)) {
+                if (preg_match("/$regex/", $auth['roles'])) {
 
                     return true;
                 }

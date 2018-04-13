@@ -39,7 +39,7 @@ class Model extends \Phalcon\Mvc\Model
 
             $session = $this->getDI()->getSession();
             if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
-                $this->created_id = $this->getDI()->getSession()->get('auth')->id;
+                $this->created_id = $session->get('auth')['user']->id;
             }
         }
 
@@ -58,7 +58,7 @@ class Model extends \Phalcon\Mvc\Model
 
             $session = $this->getDI()->getSession();
             if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
-                $this->updated_id = $this->getDI()->getSession()->get('auth')->id;
+                $this->updated_id = $session->get('auth')['user']->id;
             }
         }
     }
