@@ -377,7 +377,7 @@ class QueryBuilder
         $obj->current = $page;
         $obj->before = ($page > 1) ? $page - 1 : 1;
         $obj->next = ($page < $obj->total_pages) ? $page + 1 : $obj->total_pages;
-        $obj->items = $this->limit($limit, (($page - 1) * $limit))->builder->getQuery()->execute();
+        $obj->items = $this->builder->limit($limit, (($page - 1) * $limit))->getQuery()->execute();
 
         return $obj;
     }
@@ -385,8 +385,6 @@ class QueryBuilder
     public function paginationRaw($query, $page = 1, $limit = 50, $total = 99999999)
     {
         $query = preg_replace('/LIMIT(.*)/i', '', $query);
-        $count_query = preg_replace('/select(.*?)from(.*?)/i', 'SELECT COUNT(*) as total FROM', $query);
-
         $query .= " LIMIT $limit OFFSET " . (($page - 1) * $limit);
 
         $obj = new \stdClass();
