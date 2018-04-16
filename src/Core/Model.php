@@ -1,4 +1,5 @@
 <?php
+
 namespace Toda\Core;
 
 \Phalcon\Mvc\Model::setup(['notNullValidations' => false]);
@@ -16,7 +17,7 @@ class Model extends \Phalcon\Mvc\Model
         $this->setReadConnectionService($name);
     }
 
-    protected function  setWriteConnection($name)
+    protected function setWriteConnection($name)
     {
         $this->setWriteConnectionService($name);
     }
@@ -33,22 +34,19 @@ class Model extends \Phalcon\Mvc\Model
     {
 
         if (property_exists($this, 'created_at')) {
-            $this->created_at = time();
+            $this->updated_at = $this->created_at = time();
         }
         if (property_exists($this, 'created_id')) {
+            $this->updated_at = $this->created_id = 1;
 
-            $session = $this->getDI()->getSession();
-            if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
-                $this->created_id = $session->get('auth')['user']->id;
+            if ($this->getDI()->has('session') && !empty($this->getDI()->getSession()->get('auth'))) {
+                $this->updated_at = $this->created_id = $this->getDI()->getSession()->get('auth')['user']->id;
             }
         }
-
-        $this->beforeUpdate();
     }
 
     public function beforeUpdate()
     {
-
         if (property_exists($this, 'updated_at')) {
             $this->updated_at = time();
         }
@@ -56,9 +54,8 @@ class Model extends \Phalcon\Mvc\Model
         if (property_exists($this, 'updated_id')) {
             $this->updated_id = 1;
 
-            $session = $this->getDI()->getSession();
-            if ($session->status() == $session::SESSION_ACTIVE && !empty($session->get('auth'))) {
-                $this->updated_id = $session->get('auth')['user']->id;
+            if ($this->getDI()->has('session') && !empty($this->getDI()->getSession()->get('auth'))) {
+                $this->updated_id = $this->getDI()->getSession()->get('auth')['user']->id;
             }
         }
     }
