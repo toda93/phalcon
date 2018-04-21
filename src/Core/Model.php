@@ -6,18 +6,18 @@ namespace Toda\Core;
 
 class Model extends \Phalcon\Mvc\Model
 {
-    protected function setConnection($name)
+    public function setConnection($name)
     {
         $this->setConnectionService($name);
         $this->setSchema($name);
     }
 
-    protected function setReadConnection($name)
+    public function setReadConnection($name)
     {
         $this->setReadConnectionService($name);
     }
 
-    protected function setWriteConnection($name)
+    public function setWriteConnection($name)
     {
         $this->setWriteConnectionService($name);
     }
