@@ -37,10 +37,10 @@ class Model extends \Phalcon\Mvc\Model
             $this->updated_at = $this->created_at = time();
         }
         if (property_exists($this, 'created_id')) {
-            $this->updated_at = $this->created_id = 1;
+            $this->updated_id = $this->created_id = 1;
 
             if ($this->getDI()->has('session') && !empty($this->getDI()->getSession()->get('auth'))) {
-                $this->updated_at = $this->created_id = $this->getDI()->getSession()->get('auth')['user']->id;
+                $this->updated_id = $this->created_id = $this->getDI()->getSession()->get('auth')['user']->id;
             }
         }
     }
