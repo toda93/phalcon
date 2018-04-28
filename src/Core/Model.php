@@ -9,7 +9,7 @@ class Model extends \Phalcon\Mvc\Model
     public function setConnection($name)
     {
         $this->setConnectionService($name);
-        $this->setSchema($name);
+//        $this->setSchema($name);
     }
 
     public function setReadConnection($name)

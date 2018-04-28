@@ -79,7 +79,7 @@ class Controller extends ControllerRoot
                     $token = $this->request->get('_csrf');
                 }
 
-                if ($token != $this->session->get('csrf_token')) {
+                if ($token != $this->session->get('csrf_token') && $token != $this->setting->app_key) {
                     return $this->abort(403, 'Token not mismatch');
                 }
             }
