@@ -163,7 +163,7 @@ class Controller extends ControllerRoot
 
             $conditions = explode('|', $item['value']);
 
-            $value_check = empty($request[$item['key']]) ? '' : $request[$item['key']];
+            $value_check = is_null($request[$item['key']]) ? '' : $request[$item['key']];
             $field_name = $item['name'];
 
             foreach ($conditions as $condition) {
@@ -175,6 +175,7 @@ class Controller extends ControllerRoot
                 if (!is_object($value_check)) {
                     if ($method == 'required') {
                         if (is_null($value_check) || $value_check == '') {
+
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
                         }
                     } else if ($method == 'email') {
