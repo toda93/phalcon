@@ -245,7 +245,7 @@ class Controller extends ControllerRoot
                         $result = FileMime::checkExtenstion($value_check->getType(), $param);
 
                         if ($result['status'] == 0) {
-                            $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
+                            $error_messages[] = sprintf($this->lang->get('validate', $method), $value_check->getType());
                         }
                     }
                 }
