@@ -242,7 +242,7 @@ class Controller extends ControllerRoot
                         }
 
                     } else if ($method == 'file') {
-                        $result = FileMime::checkExtenstion($value_check, $param);
+                        $result = FileMime::checkExtenstion($value_check->getType(), $param);
 
                         if ($result['status'] == 0) {
                             $error_messages[] = sprintf($this->lang->get('validate', $method), $field_name);
