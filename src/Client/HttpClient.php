@@ -133,6 +133,7 @@ class HttpClient
 
     public function responseHeader($body = false)
     {
+        $this->opt['follow_location'] = false;
         $this->opt['header'] = true;
         $this->opt['nobody'] = !$body;
         return $this;
